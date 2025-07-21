@@ -1,4 +1,3 @@
-// app/(auth)/login.js
 import { FontAwesome } from "@expo/vector-icons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,10 +19,10 @@ import {
 import * as Yup from "yup";
 
 const schema = Yup.object().shape({
-  name: Yup.string()
-    .min(2, "Name must be at least 2 characters")
-    .required("Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
 });
 
 export default function Login() {
@@ -56,34 +55,6 @@ export default function Login() {
 
           <Controller
             control={control}
-            name="name"
-            render={({ field: { onChange, value } }) => (
-              <View style={styles.inputWrapper}>
-                <FontAwesome
-                  name="user"
-                  size={20}
-                  color="#999"
-                  style={styles.icon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Name"
-                  value={value}
-                  onChangeText={onChange}
-                  keyboardType="default"
-                  returnKeyType="next"
-                  accessibilityLabel="Name"
-                  textContentType="name"
-                />
-              </View>
-            )}
-          />
-          {errors.name && (
-            <Text style={styles.error}>{errors.name.message}</Text>
-          )}
-
-          <Controller
-            control={control}
             name="email"
             render={({ field: { onChange, value } }) => (
               <View style={styles.inputWrapper}>
@@ -100,7 +71,7 @@ export default function Login() {
                   onChangeText={onChange}
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  returnKeyType="done"
+                  returnKeyType="next"
                   accessibilityLabel="Email"
                   textContentType="emailAddress"
                 />
@@ -111,8 +82,37 @@ export default function Login() {
             <Text style={styles.error}>{errors.email.message}</Text>
           )}
 
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.inputWrapper}>
+                <FontAwesome
+                  name="lock"
+                  size={20}
+                  color="#999"
+                  style={styles.icon}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  value={value}
+                  onChangeText={onChange}
+                  secureTextEntry
+                  autoCapitalize="none"
+                  returnKeyType="done"
+                  accessibilityLabel="Password"
+                  textContentType="password"
+                />
+              </View>
+            )}
+          />
+          {errors.password && (
+            <Text style={styles.error}>{errors.password.message}</Text>
+          )}
+
           <TouchableOpacity
-            onPress={() => alert("Redirect to forgot password")}
+            onPress={() => router.push("/forgot-password")}
             style={styles.linkRight}
           >
             <Text style={styles.linkText}>Forgot Password?</Text>
