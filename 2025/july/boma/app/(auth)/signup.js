@@ -113,7 +113,7 @@ export default function Signup() {
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Sign Up</Text>
+                <Text style={styles.buttonText}>Register</Text>
               )}
             </LinearGradient>
           </TouchableOpacity>

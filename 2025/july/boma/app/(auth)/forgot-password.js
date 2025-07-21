@@ -1,7 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -17,27 +24,77 @@ export default function ForgotPassword() {
   };
 
   return (
-    <View className="flex-1 justify-center px-6 bg-white">
-      <Text className="text-2xl font-bold text-center mb-6">
-        Forgot Password
-      </Text>
-      <View className="bg-gray-100 p-4 rounded-xl flex-row items-center mb-4">
-        <Ionicons name="mail-outline" size={20} color="#666" className="mr-2" />
+    <View style={styles.container}>
+      <Text style={styles.title}>Forgot Password</Text>
+
+      <View style={styles.inputContainer}>
+        <Ionicons
+          name="mail-outline"
+          size={20}
+          color="#666"
+          style={styles.icon}
+        />
         <TextInput
+          style={styles.input}
           placeholder="Enter your email"
           value={email}
           onChangeText={setEmail}
-          className="flex-1"
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
       </View>
-      <TouchableOpacity
-        onPress={handleSendCode}
-        className="bg-green-500 p-4 rounded-xl shadow-sm mt-2"
-      >
-        <Text className="text-white text-center font-semibold">
-          Send Verification Code
-        </Text>
+
+      <TouchableOpacity style={styles.button} onPress={handleSendCode}>
+        <Text style={styles.buttonText}>Send Verification Code</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    paddingHorizontal: 24,
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f1f1f1",
+    paddingHorizontal: 12,
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+  },
+  button: {
+    backgroundColor: "#25d366",
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginTop: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+    textAlign: "center",
+    fontSize: 16,
+  },
+});
