@@ -22,29 +22,19 @@ export default function TabLayout() {
           shadowColor: "#000",
           shadowOpacity: 0.1,
           shadowRadius: 10,
-          shadowOffset: {
-            width: 0,
-            height: 4,
-          },
-          ...Platform.select({
-            android: {
-              elevation: 8,
-            },
-          }),
+          shadowOffset: { width: 0, height: 4 },
+          ...Platform.select({ android: { elevation: 8 } }),
         },
-        tabBarItemStyle: {
-          marginTop: 10,
-        },
+        tabBarItemStyle: { marginTop: 10 },
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
-          title: "Home",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name="home"
-              size={focused ? size + 2 : size}
+              name={focused ? "home" : "home-outline"}
+              size={size}
               color={color}
             />
           ),
@@ -53,11 +43,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "Search",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name="search"
-              size={focused ? size + 2 : size}
+              name={focused ? "search" : "search-outline"}
+              size={size}
               color={color}
             />
           ),
@@ -66,11 +55,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="cart"
         options={{
-          title: "Cart",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name="cart"
-              size={focused ? size + 2 : size}
+              name={focused ? "cart" : "cart-outline"}
+              size={size}
               color={color}
             />
           ),
@@ -79,11 +67,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notifications"
         options={{
-          title: "Notifications",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name="notifications"
-              size={focused ? size + 2 : size}
+              name={focused ? "notifications" : "notifications-outline"}
+              size={size}
               color={color}
             />
           ),
@@ -92,11 +79,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name="person"
-              size={focused ? size + 2 : size}
+              name={focused ? "person" : "person-outline"}
+              size={size}
               color={color}
             />
           ),
@@ -105,11 +91,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="mapview"
         options={{
-          title: "Map",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name="map"
-              size={focused ? size + 2 : size}
+              name={focused ? "map" : "map-outline"}
+              size={size}
               color={color}
             />
           ),
