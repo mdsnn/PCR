@@ -32,7 +32,7 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
 
-      {/* Floating Action Button */}
+      {/* Floating Action Button - Now Centered */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => setModalVisible(true)}
@@ -64,6 +64,7 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -104,8 +105,9 @@ const styles = StyleSheet.create({
 
   fab: {
     position: "absolute",
-    bottom: 30,
-    right: 20,
+    top: "50%", // Center vertically
+    marginTop: -30, // Offset by half the height (60/2 = 30)
+    right: 20, // Keep on the right side
     backgroundColor: "#22C55E", // matching green
     width: 60,
     height: 60,
