@@ -1,10 +1,9 @@
 import { View } from "react-native";
-import LoginForm from ../components/LoginForm.js
-
+import LoginForm from "../components/LoginForm";
 export default function Index() {
   return (
     <View>
-      <LogingForm/>
+      <LoginForm />
     </View>
   );
 }
