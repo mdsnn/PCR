@@ -1,24 +1,40 @@
 import { Ionicons } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
-import { StyleSheet } from "react-native";
+import { Platform } from "react-native";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        tabBarShowLabel: false,
         tabBarActiveTintColor: "#22C55E",
-        tabBarInactiveTintColor: "#64748B",
-        tabBarStyle: styles.tabBar,
-        tabBarItemStyle: styles.tabBarItem,
-        tabBarLabelStyle: styles.tabBarLabel,
-        tabBarBackground: () => (
-          <BlurView
-            intensity={30}
-            tint="light"
-            style={StyleSheet.absoluteFill}
-          />
-        ),
+        tabBarInactiveTintColor: "#94A3B8",
+        tabBarStyle: {
+          position: "absolute",
+          bottom: 16,
+          left: 16,
+          right: 16,
+          elevation: 10,
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          borderRadius: 30,
+          height: 70,
+          borderTopWidth: 0,
+          shadowColor: "#000",
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+          shadowOffset: {
+            width: 0,
+            height: 4,
+          },
+          ...Platform.select({
+            android: {
+              elevation: 8,
+            },
+          }),
+        },
+        tabBarItemStyle: {
+          marginTop: 10,
+        },
       }}
     >
       <Tabs.Screen
@@ -27,8 +43,8 @@ export default function TabLayout() {
           title: "Home",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? "home" : "home-outline"}
-              size={size}
+              name="home"
+              size={focused ? size + 2 : size}
               color={color}
             />
           ),
@@ -37,11 +53,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "Discover",
+          title: "Search",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? "compass" : "compass-outline"}
-              size={size}
+              name="search"
+              size={focused ? size + 2 : size}
               color={color}
             />
           ),
@@ -53,28 +69,24 @@ export default function TabLayout() {
           title: "Cart",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? "cart" : "cart-outline"}
-              size={size}
+              name="cart"
+              size={focused ? size + 2 : size}
               color={color}
             />
           ),
-          tabBarBadge: 3,
-          tabBarBadgeStyle: { backgroundColor: "#22C55E" },
         }}
       />
       <Tabs.Screen
         name="notifications"
         options={{
-          title: "Alerts",
+          title: "Notifications",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? "notifications" : "notifications-outline"}
-              size={size}
+              name="notifications"
+              size={focused ? size + 2 : size}
               color={color}
             />
           ),
-          tabBarBadge: "!",
-          tabBarBadgeStyle: { backgroundColor: "#EF4444" },
         }}
       />
       <Tabs.Screen
@@ -83,8 +95,21 @@ export default function TabLayout() {
           title: "Profile",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? "person" : "person-outline"}
-              size={size}
+              name="person"
+              size={focused ? size + 2 : size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="mapview"
+        options={{
+          title: "Map",
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name="map"
+              size={focused ? size + 2 : size}
               color={color}
             />
           ),
@@ -93,29 +118,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  tabBar: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    height: 70,
-    borderRadius: 20,
-    borderTopWidth: 0,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    overflow: "hidden",
-  },
-  tabBarItem: {
-    paddingVertical: 8,
-  },
-  tabBarLabel: {
-    fontSize: 12,
-    fontWeight: "500",
-    paddingBottom: 4,
-  },
-});
