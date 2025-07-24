@@ -1,9 +1,9 @@
 import { View } from "react-native";
-import LoginForm from "../components/LoginForm";
+import ProfileForm from "../components/ProfileForm";
 export default function Index() {
   return (
     <View>
-      <LoginForm />
+      <ProfileForm />
     </View>
   );
 }
