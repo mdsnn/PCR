@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
 import { Platform } from "react-native";
 
@@ -15,24 +14,17 @@ export default function TabLayout() {
           bottom: 16,
           left: 16,
           right: 16,
+          elevation: 10,
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
           borderRadius: 30,
           height: 70,
           borderTopWidth: 0,
-          backgroundColor: "transparent", // important for blur to show
-          overflow: "hidden", // clips corners for blur
           shadowColor: "#000",
           shadowOpacity: 0.1,
           shadowRadius: 10,
           shadowOffset: { width: 0, height: 4 },
-          ...Platform.select({
-            android: {
-              elevation: 10,
-            },
-          }),
+          ...Platform.select({ android: { elevation: 8 } }),
         },
-        tabBarBackground: () => (
-          <BlurView intensity={70} tint="light" style={{ flex: 1 }} />
-        ),
         tabBarItemStyle: { marginTop: 10 },
       }}
     >
