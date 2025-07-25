@@ -6,10 +6,9 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <MaterialCommunityIcons name="home" size={32} color="#22c55e" />
-          <Text style={styles.title}>Home</Text>
+          <MaterialCommunityIcons />
+          <Text style={styles.title}></Text>
         </View>
-
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Welcome to your app!</Text>
           <Text style={styles.cardText}>
