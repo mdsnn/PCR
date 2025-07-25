@@ -48,8 +48,8 @@ export default function NotificationsScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <MaterialCommunityIcons name="bell" size={32} color="#22c55e" />
-          <Text style={styles.title}>Notifications</Text>
+          <MaterialCommunityIcons />
+          <Text style={styles.title}></Text>
         </View>
 
         <View style={styles.actionsContainer}>
