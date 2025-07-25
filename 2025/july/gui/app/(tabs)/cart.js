@@ -21,8 +21,8 @@ export default function CartScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <MaterialCommunityIcons name="shopping" size={32} color="#22c55e" />
-          <Text style={styles.title}>Shopping Cart</Text>
+          <MaterialCommunityIcons />
+          <Text style={styles.title}></Text>
         </View>
 
         {cartItems.map((item) => (

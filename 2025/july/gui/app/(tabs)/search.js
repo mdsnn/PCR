@@ -24,8 +24,8 @@ export default function SearchScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <MaterialCommunityIcons name="magnify" size={32} color="#22c55e" />
-          <Text style={styles.title}>Search</Text>
+          <MaterialCommunityIcons />
+          <Text style={styles.title}></Text>
         </View>
 
         <View style={styles.searchContainer}>
