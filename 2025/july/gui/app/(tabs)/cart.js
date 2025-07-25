@@ -7,8 +7,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 export default function CartScreen() {
+  const { colors } = useTheme();
+
   const cartItems = [
     { id: 1, name: "Premium Headphones", price: "$199", quantity: 1 },
     { id: 2, name: "Wireless Mouse", price: "$49", quantity: 2 },
@@ -18,41 +21,80 @@ export default function CartScreen() {
   const total = "$313";
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <MaterialCommunityIcons />
-          <Text style={styles.title}></Text>
+          <MaterialCommunityIcons
+            name="shopping"
+            size={32}
+            color={colors.primary}
+          />
+          <Text style={[styles.title, { color: colors.text }]}>
+            Shopping Cart
+          </Text>
         </View>
 
         {cartItems.map((item) => (
-          <View key={item.id} style={styles.cartItem}>
+          <View
+            key={item.id}
+            style={[styles.cartItem, { backgroundColor: colors.surface }]}
+          >
             <View style={styles.itemInfo}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemPrice}>{item.price}</Text>
+              <Text style={[styles.itemName, { color: colors.text }]}>
+                {item.name}
+              </Text>
+              <Text style={[styles.itemPrice, { color: colors.primary }]}>
+                {item.price}
+              </Text>
             </View>
             <View style={styles.quantityContainer}>
-              <TouchableOpacity style={styles.quantityButton}>
+              <TouchableOpacity
+                style={[
+                  styles.quantityButton,
+                  { backgroundColor: colors.surfaceSecondary },
+                ]}
+              >
                 <MaterialCommunityIcons
                   name="minus"
                   size={16}
-                  color="#6b7280"
+                  color={colors.textSecondary}
                 />
               </TouchableOpacity>
-              <Text style={styles.quantity}>{item.quantity}</Text>
-              <TouchableOpacity style={styles.quantityButton}>
-                <MaterialCommunityIcons name="plus" size={16} color="#6b7280" />
+              <Text style={[styles.quantity, { color: colors.text }]}>
+                {item.quantity}
+              </Text>
+              <TouchableOpacity
+                style={[
+                  styles.quantityButton,
+                  { backgroundColor: colors.surfaceSecondary },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="plus"
+                  size={16}
+                  color={colors.textSecondary}
+                />
               </TouchableOpacity>
             </View>
           </View>
         ))}
 
-        <View style={styles.totalContainer}>
+        <View
+          style={[styles.totalContainer, { backgroundColor: colors.surface }]}
+        >
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Total:</Text>
-            <Text style={styles.totalAmount}>{total}</Text>
+            <Text style={[styles.totalLabel, { color: colors.text }]}>
+              Total:
+            </Text>
+            <Text style={[styles.totalAmount, { color: colors.primary }]}>
+              {total}
+            </Text>
           </View>
-          <TouchableOpacity style={styles.checkoutButton}>
+          <TouchableOpacity
+            style={[styles.checkoutButton, { backgroundColor: colors.primary }]}
+          >
             <Text style={styles.checkoutText}>Proceed to Checkout</Text>
             <MaterialCommunityIcons
               name="arrow-right"
@@ -69,7 +111,6 @@ export default function CartScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
   },
   content: {
     padding: 20,
@@ -83,11 +124,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#1f2937",
     marginTop: 8,
   },
   cartItem: {
-    backgroundColor: "white",
     borderRadius: 16,
     padding: 20,
     marginBottom: 12,
@@ -109,12 +148,10 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#1f2937",
     marginBottom: 4,
   },
   itemPrice: {
     fontSize: 14,
-    color: "#22c55e",
     fontWeight: "500",
   },
   quantityContainer: {
@@ -125,7 +162,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#f3f4f6",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -133,10 +169,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     fontSize: 16,
     fontWeight: "600",
-    color: "#1f2937",
   },
   totalContainer: {
-    backgroundColor: "white",
     borderRadius: 16,
     padding: 20,
     marginTop: 20,
@@ -158,15 +192,12 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#1f2937",
   },
   totalAmount: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#22c55e",
   },
   checkoutButton: {
-    backgroundColor: "#22c55e",
     borderRadius: 12,
     padding: 16,
     flexDirection: "row",
