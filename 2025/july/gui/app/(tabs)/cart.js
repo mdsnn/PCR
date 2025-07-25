@@ -26,14 +26,8 @@ export default function CartScreen() {
     >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <MaterialCommunityIcons
-            name="shopping"
-            size={32}
-            color={colors.primary}
-          />
-          <Text style={[styles.title, { color: colors.text }]}>
-            Shopping Cart
-          </Text>
+          <MaterialCommunityIcons />
+          <Text style={[styles.title, { color: colors.text }]}></Text>
         </View>
 
         {cartItems.map((item) => (
