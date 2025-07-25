@@ -9,9 +9,11 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../context/ThemeContext";
 
 const CustomTabBar = ({ state, descriptors, navigation }) => {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const [scaleValues] = React.useState(
     state.routes.map(() => new Animated.Value(1))
   );
@@ -54,7 +56,16 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
-      <View style={styles.tabBar}>
+      <View
+        style={[
+          styles.tabBar,
+          {
+            backgroundColor: colors.tabBarBackground,
+            borderColor: colors.borderLight,
+            shadowColor: colors.shadowColor,
+          },
+        ]}
+      >
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const label =
@@ -78,13 +89,13 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                 <MaterialCommunityIcons
                   name={getIconName(iconName, isFocused)}
                   size={24}
-                  color={isFocused ? "#22c55e" : "#71717a"}
+                  color={isFocused ? colors.primary : colors.tabBarInactive}
                 />
               </Animated.View>
               <Text
                 style={[
                   styles.label,
-                  { color: isFocused ? "#22c55e" : "#71717a" },
+                  { color: isFocused ? colors.primary : colors.tabBarInactive },
                 ]}
               >
                 {label}
@@ -108,14 +119,12 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: "row",
-    backgroundColor: "rgba(255, 255, 255, 0.85)",
     borderRadius: 25,
     marginBottom: 10,
     paddingVertical: 12,
     paddingHorizontal: 8,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
         shadowOffset: {
           width: 0,
           height: 4,
@@ -129,7 +138,6 @@ const styles = StyleSheet.create({
     }),
     backdropFilter: "blur(20px)",
     borderWidth: 0.5,
-    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   tabItem: {
     flex: 1,
