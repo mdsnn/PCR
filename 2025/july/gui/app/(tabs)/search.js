@@ -28,12 +28,8 @@ export default function SearchScreen() {
     >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <MaterialCommunityIcons
-            name="magnify"
-            size={32}
-            color={colors.primary}
-          />
-          <Text style={[styles.title, { color: colors.text }]}>Search</Text>
+          <MaterialCommunityIcons />
+          <Text style={[styles.title, { color: colors.text }]}></Text>
         </View>
 
         <View
