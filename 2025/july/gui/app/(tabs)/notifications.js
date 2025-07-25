@@ -7,8 +7,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 export default function NotificationsScreen() {
+  const { colors } = useTheme();
+
   const notifications = [
     {
       id: 1,
@@ -45,48 +48,99 @@ export default function NotificationsScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <MaterialCommunityIcons />
-          <Text style={styles.title}></Text>
+          <MaterialCommunityIcons
+            name="bell"
+            size={32}
+            color={colors.primary}
+          />
+          <Text style={[styles.title, { color: colors.text }]}>
+            Notifications
+          </Text>
         </View>
 
         <View style={styles.actionsContainer}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionText}>Mark all as read</Text>
+          <TouchableOpacity
+            style={[
+              styles.actionButton,
+              { backgroundColor: `${colors.primary}20` },
+            ]}
+          >
+            <Text style={[styles.actionText, { color: colors.primary }]}>
+              Mark all as read
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionText}>Clear all</Text>
+          <TouchableOpacity
+            style={[
+              styles.actionButton,
+              { backgroundColor: `${colors.primary}20` },
+            ]}
+          >
+            <Text style={[styles.actionText, { color: colors.primary }]}>
+              Clear all
+            </Text>
           </TouchableOpacity>
         </View>
 
         {notifications.map((notification) => (
           <TouchableOpacity
             key={notification.id}
-            style={styles.notificationItem}
+            style={[
+              styles.notificationItem,
+              { backgroundColor: colors.surface },
+            ]}
           >
-            <View style={styles.notificationIcon}>
+            <View
+              style={[
+                styles.notificationIcon,
+                { backgroundColor: `${colors.primary}20` },
+              ]}
+            >
               <MaterialCommunityIcons
                 name={notification.icon}
                 size={24}
-                color="#22c55e"
+                color={colors.primary}
               />
             </View>
 
             <View style={styles.notificationContent}>
               <View style={styles.notificationHeader}>
-                <Text style={styles.notificationTitle}>
+                <Text
+                  style={[styles.notificationTitle, { color: colors.text }]}
+                >
                   {notification.title}
                 </Text>
-                {!notification.read && <View style={styles.unreadDot} />}
+                {!notification.read && (
+                  <View
+                    style={[
+                      styles.unreadDot,
+                      { backgroundColor: colors.primary },
+                    ]}
+                  />
+                )}
               </View>
 
-              <Text style={styles.notificationMessage}>
+              <Text
+                style={[
+                  styles.notificationMessage,
+                  { color: colors.textSecondary },
+                ]}
+              >
                 {notification.message}
               </Text>
 
-              <Text style={styles.notificationTime}>{notification.time}</Text>
+              <Text
+                style={[
+                  styles.notificationTime,
+                  { color: colors.textTertiary },
+                ]}
+              >
+                {notification.time}
+              </Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -98,7 +152,6 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
   },
   content: {
     padding: 20,
@@ -112,7 +165,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#1f2937",
     marginTop: 8,
   },
   actionsContainer: {
@@ -124,15 +176,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: "rgba(34, 197, 94, 0.1)",
   },
   actionText: {
-    color: "#22c55e",
     fontSize: 14,
     fontWeight: "500",
   },
   notificationItem: {
-    backgroundColor: "white",
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
@@ -150,7 +199,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "rgba(34, 197, 94, 0.1)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -166,24 +214,20 @@ const styles = StyleSheet.create({
   notificationTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#1f2937",
     flex: 1,
   },
   unreadDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#22c55e",
     marginLeft: 8,
   },
   notificationMessage: {
     fontSize: 14,
-    color: "#6b7280",
     lineHeight: 20,
     marginBottom: 8,
   },
   notificationTime: {
     fontSize: 12,
-    color: "#9ca3af",
   },
 });
