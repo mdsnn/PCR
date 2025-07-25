@@ -12,12 +12,8 @@ export default function HomeScreen() {
     >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <MaterialCommunityIcons
-            name="home"
-            size={32}
-            color={colors.primary}
-          />
-          <Text style={[styles.title, { color: colors.text }]}>Home</Text>
+          <MaterialCommunityIcons />
+          <Text style={[styles.title, { color: colors.text }]}></Text>
           <ThemeToggle style={styles.themeToggle} />
         </View>
 
