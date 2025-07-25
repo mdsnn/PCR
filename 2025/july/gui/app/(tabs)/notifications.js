@@ -53,14 +53,8 @@ export default function NotificationsScreen() {
     >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <MaterialCommunityIcons
-            name="bell"
-            size={32}
-            color={colors.primary}
-          />
-          <Text style={[styles.title, { color: colors.text }]}>
-            Notifications
-          </Text>
+          <MaterialCommunityIcons />
+          <Text style={[styles.title, { color: colors.text }]}></Text>
         </View>
 
         <View style={styles.actionsContainer}>
