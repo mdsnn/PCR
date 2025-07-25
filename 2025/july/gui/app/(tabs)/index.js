@@ -24,7 +24,7 @@ export default function HomeScreen() {
           <Text style={[styles.cardText, { color: colors.textSecondary }]}>
             This is the home screen with a beautiful glassmorphism tab bar at
             the bottom. Try switching between light and dark mode using the
-            toggle above!
+            toggle above!!
           </Text>
         </View>
 
