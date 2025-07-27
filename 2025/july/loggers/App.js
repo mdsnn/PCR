@@ -68,7 +68,7 @@ export default function App() {
               <View style={styles.inputContainer}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter your email"
+                  placeholder="enter your email"
                   placeholderTextColor="#9CA3AF"
                   value={email}
                   onChangeText={setEmail}
@@ -81,7 +81,7 @@ export default function App() {
               <View style={styles.inputContainer}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter your password"
+                  placeholder="enter your password"
                   placeholderTextColor="#9CA3AF"
                   value={password}
                   onChangeText={setPassword}
