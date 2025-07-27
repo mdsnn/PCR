@@ -62,7 +62,7 @@ export default function App() {
         >
           <View style={styles.loginContainer}>
             <View style={styles.headerContainer}>
-              <Text style={styles.title}>POTBELLY</Text>
+              <Text style={styles.title}>POTBELLY ERA</Text>
             </View>
 
             <View style={styles.formContainer}>
