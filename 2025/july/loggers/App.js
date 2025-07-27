@@ -68,7 +68,6 @@ export default function App() {
 
             <View style={styles.formContainer}>
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}></Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Enter your email"
@@ -82,7 +81,6 @@ export default function App() {
               </View>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}></Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Enter your password"
