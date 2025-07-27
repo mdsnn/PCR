@@ -63,7 +63,6 @@ export default function App() {
           <View style={styles.loginContainer}>
             <View style={styles.headerContainer}>
               <Text style={styles.title}>POTBELLY</Text>
-              <Text style={styles.subtitle}>Sign in to continue</Text>
             </View>
 
             <View style={styles.formContainer}>
