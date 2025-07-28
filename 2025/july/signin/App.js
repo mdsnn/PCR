@@ -190,9 +190,6 @@ const App = () => {
               {/* Logo Section */}
               <View style={styles.logoSection}>
                 <Text style={styles.logoTitle}>POTBELLY ERA</Text>
-                <Text style={styles.logoSubtitle}>
-                  Welcome back! Please sign in to continue
-                </Text>
               </View>
 
               {/* Email Input */}
