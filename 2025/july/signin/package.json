@@ -9,13 +9,16 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.1.0",
+    "@hookform/resolvers": "^5.2.0",
     "expo": "~53.0.20",
+    "expo-blur": "~14.1.5",
+    "expo-linear-gradient": "~14.1.5",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
+    "react-hook-form": "^7.61.1",
     "react-native": "0.79.5",
-    "expo-linear-gradient": "~14.1.5",
-    "expo-blur": "~14.1.5",
-    "@expo/vector-icons": "^14.1.0"
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
