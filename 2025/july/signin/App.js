@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,8 +16,11 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 import { Ionicons } from "@expo/vector-icons";
+import { useForm, Controller } from "react-hook-form";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
 const FloatingCircle = ({ size, top, left, right, bottom, delay }) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
@@ -63,10 +66,10 @@ const FloatingCircle = ({ size, top, left, right, bottom, delay }) => {
         {
           width: size,
           height: size,
-          top: top,
-          left: left,
-          right: right,
-          bottom: bottom,
+          top,
+          left,
+          right,
+          bottom,
           transform: [{ translateY }, { scale }],
           opacity,
         },
@@ -75,11 +78,26 @@ const FloatingCircle = ({ size, top, left, right, bottom, delay }) => {
   );
 };
 
+// Yup validation schema
+const schema = Yup.object().shape({
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+});
+
 const App = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: { email: "", password: "" },
+    resolver: yupResolver(schema),
+    mode: "onChange",
+  });
 
   const containerAnimation = useRef(new Animated.Value(0)).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
@@ -92,14 +110,7 @@ const App = () => {
     }).start();
   }, []);
 
-  const handleSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
-
-    setIsLoading(true);
-
+  const onSubmit = (data) => {
     Animated.sequence([
       Animated.timing(buttonScale, {
         toValue: 0.95,
@@ -114,27 +125,20 @@ const App = () => {
     ]).start();
 
     setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert("Success", "Login successful! (This is a demo)");
-    }, 2000);
+      Alert.alert("Success", `Welcome ${data.email}!`);
+    }, 1500);
+  };
+
+  const handleForgotPassword = () => {
+    Alert.alert("Forgot Password", "Reset functionality goes here.");
+  };
+
+  const handleSignUp = () => {
+    Alert.alert("Sign Up", "Sign up flow goes here.");
   };
 
   const handleSocialLogin = (provider) => {
     Alert.alert("Social Login", `${provider} login would be implemented here`);
-  };
-
-  const handleForgotPassword = () => {
-    Alert.alert(
-      "Forgot Password",
-      "Password reset functionality would be implemented here"
-    );
-  };
-
-  const handleSignUp = () => {
-    Alert.alert(
-      "Sign Up",
-      "Sign up functionality would redirect to registration page"
-    );
   };
 
   const containerTranslateY = containerAnimation.interpolate({
@@ -168,7 +172,6 @@ const App = () => {
       >
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
           <Animated.View
@@ -185,6 +188,7 @@ const App = () => {
                 <Text style={styles.logoTitle}>POTBELLY ERA</Text>
               </View>
 
+              {/* Email Input */}
               <View style={styles.inputGroup}>
                 <View style={styles.inputWrapper}>
                   <Ionicons
@@ -193,19 +197,29 @@ const App = () => {
                     color="#a0aec0"
                     style={styles.inputIcon}
                   />
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Enter your email address"
-                    placeholderTextColor="#a0aec0"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
+                  <Controller
+                    control={control}
+                    name="email"
+                    render={({ field: { onChange, value, onBlur } }) => (
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="Enter your email address"
+                        placeholderTextColor="#a0aec0"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                      />
+                    )}
                   />
                 </View>
+                {errors.email && (
+                  <Text style={styles.errorText}>{errors.email.message}</Text>
+                )}
               </View>
 
+              {/* Password Input */}
               <View style={styles.inputGroup}>
                 <View style={styles.inputWrapper}>
                   <Ionicons
@@ -214,29 +228,30 @@ const App = () => {
                     color="#a0aec0"
                     style={styles.inputIcon}
                   />
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Enter your password"
-                    placeholderTextColor="#a0aec0"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
-                    autoCapitalize="none"
-                    autoCorrect={false}
+                  <Controller
+                    control={control}
+                    name="password"
+                    render={({ field: { onChange, value, onBlur } }) => (
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="Enter your password"
+                        placeholderTextColor="#a0aec0"
+                        secureTextEntry={true}
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                      />
+                    )}
                   />
-                  <TouchableOpacity
-                    style={styles.passwordToggle}
-                    onPress={() => setShowPassword(!showPassword)}
-                  >
-                    <Ionicons
-                      name={showPassword ? "eye-off-outline" : "eye-outline"}
-                      size={20}
-                      color="#718096"
-                    />
-                  </TouchableOpacity>
                 </View>
+                {errors.password && (
+                  <Text style={styles.errorText}>
+                    {errors.password.message}
+                  </Text>
+                )}
               </View>
 
+              {/* Forgot Password */}
               <TouchableOpacity
                 style={styles.forgotPassword}
                 onPress={handleForgotPassword}
@@ -244,11 +259,12 @@ const App = () => {
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
 
+              {/* Sign In Button */}
               <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
                 <TouchableOpacity
                   style={styles.signInButton}
-                  onPress={handleSignIn}
-                  disabled={isLoading}
+                  onPress={handleSubmit(onSubmit)}
+                  disabled={isSubmitting}
                   activeOpacity={0.8}
                 >
                   <LinearGradient
@@ -258,18 +274,20 @@ const App = () => {
                     style={styles.signInGradient}
                   >
                     <Text style={styles.signInButtonText}>
-                      {isLoading ? "Signing In..." : "Sign In"}
+                      {isSubmitting ? "Signing In..." : "Sign In"}
                     </Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </Animated.View>
 
+              {/* Divider */}
               <View style={styles.divider}>
                 <View style={styles.dividerLine} />
                 <Text style={styles.dividerText}>or continue with</Text>
                 <View style={styles.dividerLine} />
               </View>
 
+              {/* Social Login */}
               <View style={styles.socialLoginContainer}>
                 <TouchableOpacity
                   style={styles.socialButton}
@@ -281,6 +299,7 @@ const App = () => {
                 </TouchableOpacity>
               </View>
 
+              {/* Sign Up Link */}
               <View style={styles.signUpContainer}>
                 <Text style={styles.signUpText}>Don't have an account? </Text>
                 <TouchableOpacity onPress={handleSignUp}>
@@ -296,9 +315,7 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   background: {
     position: "absolute",
     left: 0,
@@ -311,9 +328,7 @@ const styles = StyleSheet.create({
     borderRadius: 1000,
     backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
-  keyboardAvoid: {
-    flex: 1,
-  },
+  keyboardAvoid: { flex: 1 },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
@@ -330,26 +345,23 @@ const styles = StyleSheet.create({
   },
   logoSection: {
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 40,
   },
   logoTitle: {
     fontSize: 28,
     fontWeight: "700",
     color: "#2d3748",
-    letterSpacing: -0.5,
     marginBottom: 8,
   },
-  inputGroup: {
-    marginBottom: 24,
-  },
+  inputGroup: { marginBottom: 24 },
   inputWrapper: {
-    position: "relative",
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 2,
     borderColor: "#e2e8f0",
     borderRadius: 12,
     backgroundColor: "rgba(255, 255, 255, 0.8)",
+    position: "relative",
   },
   inputIcon: {
     position: "absolute",
@@ -364,10 +376,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#2d3748",
   },
-  passwordToggle: {
-    position: "absolute",
-    right: 16,
-    padding: 4,
+  errorText: {
+    color: "#dc2626",
+    fontSize: 13,
+    marginTop: 4,
+    marginLeft: 4,
   },
   forgotPassword: {
     alignSelf: "flex-end",
