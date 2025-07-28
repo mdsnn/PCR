@@ -273,9 +273,17 @@ const App = () => {
                     end={{ x: 1, y: 1 }}
                     style={styles.signInGradient}
                   >
-                    <Text style={styles.signInButtonText}>
-                      {isSubmitting ? "Signing In..." : "Sign In"}
-                    </Text>
+                    {isSubmitting ? (
+                      <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="small" color="#fff" />
+                        <Text style={styles.signInButtonText}>
+                          {" "}
+                          Signing In...
+                        </Text>
+                      </View>
+                    ) : (
+                      <Text style={styles.signInButtonText}>Sign In</Text>
+                    )}
                   </LinearGradient>
                 </TouchableOpacity>
               </Animated.View>
