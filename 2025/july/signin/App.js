@@ -194,7 +194,6 @@ const App = () => {
 
               {/* Email Input */}
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Email Address</Text>
                 <View style={styles.inputWrapper}>
                   <Ionicons
                     name="mail-outline"
