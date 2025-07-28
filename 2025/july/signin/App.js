@@ -1,5 +1,5 @@
 // LoginScreen.js - React Native Expo
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
