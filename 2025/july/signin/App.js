@@ -208,6 +208,8 @@ const App = () => {
                         placeholderTextColor="#a0aec0"
                         keyboardType="email-address"
                         autoCapitalize="none"
+                        autoComplete="off"
+                        autoCorrect={false}
                         value={value}
                         onChangeText={onChange}
                         onBlur={onBlur}
