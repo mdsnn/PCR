@@ -216,7 +216,6 @@ const App = () => {
 
               {/* Password Input */}
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Password</Text>
                 <View style={styles.inputWrapper}>
                   <Ionicons
                     name="lock-closed-outline"
