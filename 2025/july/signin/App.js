@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   },
   logoSection: {
     alignItems: "center",
-    marginBottom: 40,
+    marginBottom: 30,
   },
   logoTitle: {
     fontSize: 28,
