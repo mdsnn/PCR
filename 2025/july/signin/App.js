@@ -289,17 +289,8 @@ const App = () => {
                   onPress={() => handleSocialLogin("Google")}
                   activeOpacity={0.7}
                 >
-                  <Ionicons name="logo-google" size={20} color="#4285F4" />
+                  <Ionicons name="logo-google" size={18} color="#4285F4" />
                   <Text style={styles.socialButtonText}>Google</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.socialButton}
-                  onPress={() => handleSocialLogin("Apple")}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons name="logo-apple" size={20} color="#333" />
-                  <Text style={styles.socialButtonText}>Apple</Text>
                 </TouchableOpacity>
               </View>
 
