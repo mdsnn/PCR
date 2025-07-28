@@ -1,4 +1,3 @@
-// LoginScreen.js - React Native Expo
 import { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -86,7 +85,6 @@ const App = () => {
   const buttonScale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // Entrance animation
     Animated.timing(containerAnimation, {
       toValue: 1,
       duration: 800,
@@ -102,7 +100,6 @@ const App = () => {
 
     setIsLoading(true);
 
-    // Animate button
     Animated.sequence([
       Animated.timing(buttonScale, {
         toValue: 0.95,
@@ -116,7 +113,6 @@ const App = () => {
       }),
     ]).start();
 
-    // Simulate login
     setTimeout(() => {
       setIsLoading(false);
       Alert.alert("Success", "Login successful! (This is a demo)");
@@ -155,15 +151,13 @@ const App = () => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-      {/* Background Gradient */}
       <LinearGradient
-        colors={["#667eea", "#764ba2"]}
+        colors={["#22c55e", "#16a34a"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.background}
       />
 
-      {/* Floating Elements */}
       <FloatingCircle size={80} top="20%" left="10%" delay={0} />
       <FloatingCircle size={120} top="60%" right="15%" delay={2000} />
       <FloatingCircle size={60} bottom="20%" left="20%" delay={4000} />
@@ -187,12 +181,10 @@ const App = () => {
             ]}
           >
             <BlurView intensity={20} style={styles.blurContainer}>
-              {/* Logo Section */}
               <View style={styles.logoSection}>
                 <Text style={styles.logoTitle}>POTBELLY ERA</Text>
               </View>
 
-              {/* Email Input */}
               <View style={styles.inputGroup}>
                 <View style={styles.inputWrapper}>
                   <Ionicons
@@ -214,7 +206,6 @@ const App = () => {
                 </View>
               </View>
 
-              {/* Password Input */}
               <View style={styles.inputGroup}>
                 <View style={styles.inputWrapper}>
                   <Ionicons
@@ -246,7 +237,6 @@ const App = () => {
                 </View>
               </View>
 
-              {/* Forgot Password */}
               <TouchableOpacity
                 style={styles.forgotPassword}
                 onPress={handleForgotPassword}
@@ -254,7 +244,6 @@ const App = () => {
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
 
-              {/* Sign In Button */}
               <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
                 <TouchableOpacity
                   style={styles.signInButton}
@@ -263,7 +252,7 @@ const App = () => {
                   activeOpacity={0.8}
                 >
                   <LinearGradient
-                    colors={["#667eea", "#764ba2"]}
+                    colors={["#22c55e", "#16a34a"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.signInGradient}
@@ -275,14 +264,12 @@ const App = () => {
                 </TouchableOpacity>
               </Animated.View>
 
-              {/* Divider */}
               <View style={styles.divider}>
                 <View style={styles.dividerLine} />
                 <Text style={styles.dividerText}>or continue with</Text>
                 <View style={styles.dividerLine} />
               </View>
 
-              {/* Social Login */}
               <View style={styles.socialLoginContainer}>
                 <TouchableOpacity
                   style={styles.socialButton}
@@ -294,7 +281,6 @@ const App = () => {
                 </TouchableOpacity>
               </View>
 
-              {/* Sign Up Link */}
               <View style={styles.signUpContainer}>
                 <Text style={styles.signUpText}>Don't have an account? </Text>
                 <TouchableOpacity onPress={handleSignUp}>
@@ -353,20 +339,8 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     marginBottom: 8,
   },
-  logoSubtitle: {
-    color: "#718096",
-    fontSize: 14,
-    fontWeight: "400",
-    textAlign: "center",
-  },
   inputGroup: {
     marginBottom: 24,
-  },
-  inputLabel: {
-    color: "#4a5568",
-    fontWeight: "500",
-    fontSize: 14,
-    marginBottom: 8,
   },
   inputWrapper: {
     position: "relative",
@@ -401,7 +375,7 @@ const styles = StyleSheet.create({
     marginTop: -8,
   },
   forgotPasswordText: {
-    color: "#667eea",
+    color: "#22c55e",
     fontSize: 14,
     fontWeight: "500",
   },
@@ -469,7 +443,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signUpLink: {
-    color: "#667eea",
+    color: "#22c55e",
     fontSize: 14,
     fontWeight: "600",
   },
