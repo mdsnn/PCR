@@ -348,8 +348,8 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   logoTitle: {
-    fontSize: 28,
-    fontWeight: "700",
+    fontSize: 26,
+    fontWeight: "500",
     color: "#2d3748",
     marginBottom: 8,
   },
