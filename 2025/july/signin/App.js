@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -99,6 +99,7 @@ const App = () => {
     resolver: yupResolver(schema),
     mode: "onChange",
   });
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const containerAnimation = useRef(new Animated.Value(0)).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
