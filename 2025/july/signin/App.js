@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   View,
   Text,
@@ -225,29 +226,36 @@ const App = () => {
 
               {/* Password Input */}
               <View style={styles.inputGroup}>
-                <View style={styles.inputWrapper}>
-                  <Ionicons
-                    name="lock-closed-outline"
-                    size={20}
-                    color="#a0aec0"
-                    style={styles.inputIcon}
-                  />
-                  <Controller
-                    control={control}
-                    name="password"
-                    render={({ field: { onChange, value, onBlur } }) => (
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <View style={styles.inputWrapper}>
                       <TextInput
-                        style={styles.textInput}
-                        placeholder="Enter your password"
-                        placeholderTextColor="#a0aec0"
-                        secureTextEntry={true}
+                        placeholder="Password"
+                        placeholderTextColor="#888"
+                        style={styles.input}
+                        secureTextEntry={!passwordVisible}
+                        autoComplete="off"
+                        autoCorrect={false}
+                        autoCapitalize="none"
                         value={value}
                         onChangeText={onChange}
                         onBlur={onBlur}
                       />
-                    )}
-                  />
-                </View>
+                      <TouchableOpacity
+                        style={styles.visibilityToggle}
+                        onPress={() => setPasswordVisible((prev) => !prev)}
+                      >
+                        <MaterialCommunityIcons
+                          name={passwordVisible ? "eye-off" : "eye"}
+                          size={24}
+                          color="#888"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                />
                 {errors.password && (
                   <Text style={styles.errorText}>
                     {errors.password.message}
@@ -369,29 +377,23 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#e2e8f0",
-    borderRadius: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    position: "relative",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 12,
   },
-  inputIcon: {
-    position: "absolute",
-    left: 16,
-    zIndex: 1,
-  },
-  textInput: {
+  input: {
     flex: 1,
-    paddingVertical: 16,
-    paddingLeft: 48,
-    paddingRight: 48,
-    fontSize: 16,
-    color: "#2d3748",
+    height: 48,
+    color: "#000",
+  },
+  visibilityToggle: {
+    padding: 5,
   },
   errorText: {
-    color: "#dc2626",
-    fontSize: 13,
-    marginTop: 4,
+    color: "red",
+    marginBottom: 8,
     marginLeft: 4,
   },
   forgotPassword: {
