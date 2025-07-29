@@ -1,12 +1,16 @@
-import { Text, View } from "react-native";
-import React, { Component } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import SplashScreenView from "./SplashScreenView";
 import LoginScreen from "./components/LoginScreen";
-import SignupScreen from "./components/SignupScreen";
+import { useEffect, useState } from "react";
 
-export class App extends Component {
-  render() {
-    return <SignupScreen />;
-  }
+export default function App() {
+  const [isShowSplashScreen, setIsShowSplashScreen] = useState(true);
+  useEffect(() => {
+    setTimeout(() => {
+      setIsShowSplashScreen(false);
+    }, 3000);
+  });
+  return <>{isShowSplashScreen ? <SplashScreenView /> : <LoginScreen />}</>;
 }
 
-export default App;
+const styles = StyleSheet.create({});
