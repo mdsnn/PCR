@@ -1,22 +1,22 @@
 const express = require("express");
 const { body } = require("express-validator");
+
 const {
   registerUser,
   loginUser,
   refreshAccessToken,
   logoutUser,
 } = require("../services/auth.service");
+
 const {
   handleValidationErrors,
   validateRegistration,
   validateLogin,
   validateRefreshToken,
 } = require("../middleware/validate");
-const { generateTokens } = require("../utils/token.utils"); // assuming token generator here
 
 const router = express.Router();
 
-// Register
 router.post(
   "/register",
   [
@@ -35,7 +35,7 @@ router.post(
     try {
       const { email, password } = req.body;
       const user = await registerUser(email, password);
-      const { accessToken, refreshToken } = await generateTokens(user.id);
+      const { accessToken, refreshToken } = await user;
       res.status(201).json({ user, accessToken, refreshToken });
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -43,7 +43,6 @@ router.post(
   }
 );
 
-// Login
 router.post(
   "/login",
   [
@@ -66,7 +65,6 @@ router.post(
   }
 );
 
-// Refresh Token
 router.post("/refresh-token", validateRefreshToken, async (req, res) => {
   try {
     const { refreshToken } = req.body;
@@ -77,7 +75,6 @@ router.post("/refresh-token", validateRefreshToken, async (req, res) => {
   }
 });
 
-// Logout
 router.post("/logout", validateRefreshToken, async (req, res) => {
   try {
     const { refreshToken } = req.body;

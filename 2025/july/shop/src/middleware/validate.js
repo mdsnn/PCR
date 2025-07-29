@@ -1,8 +1,11 @@
 const { validationResult } = require("express-validator");
+const {
+  registrationSchema,
+  loginSchema,
+  refreshTokenSchema,
+} = require("../schemas/user.schema");
 
-/**
- * Middleware to run express-validator checks and handle errors
- */
+// Express-validator result handler
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -11,31 +14,24 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-/**
- * Higher-order middleware to validate request body using Yup schema
- */
-const createYupValidator = (schema) => async (req, res, next) => {
+// Generic Yup validation middleware
+const validate = (schema) => async (req, res, next) => {
   try {
     await schema.validate(req.body, { abortEarly: false });
     next();
   } catch (error) {
-    const formattedErrors = error.inner.reduce((acc, curr) => {
+    const errors = error.inner.reduce((acc, curr) => {
       acc[curr.path] = curr.message;
       return acc;
     }, {});
-    return res.status(400).json({ errors: formattedErrors });
+    res.status(400).json({ errors });
   }
 };
 
-const {
-  registrationSchema,
-  loginSchema,
-  refreshTokenSchema,
-} = require("../schemas/user.schema");
-
 module.exports = {
+  validate,
   handleValidationErrors,
-  validateRegistration: createYupValidator(registrationSchema),
-  validateLogin: createYupValidator(loginSchema),
-  validateRefreshToken: createYupValidator(refreshTokenSchema),
+  validateRegistration: validate(registrationSchema),
+  validateLogin: validate(loginSchema),
+  validateRefreshToken: validate(refreshTokenSchema),
 };
