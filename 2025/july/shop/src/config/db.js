@@ -1,12 +1,6 @@
-const { drizzle } = require("drizzle-orm/neon-serverless");
-const { Pool } = require("pg");
-const { users, refreshTokens } = require("../models/user.model");
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import * as schema from "../schemas/user.schema.js";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true,
-});
-
-const db = drizzle(pool, { schema: { users, refreshTokens } });
-
-module.exports = db;
+const sql = neon(process.env.DATABASE_URL);
+export const db = drizzle(sql, { schema });
