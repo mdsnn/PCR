@@ -4,11 +4,7 @@ import LoginScreen from "./components/LoginScreen";
 
 export class App extends Component {
   render() {
-    return (
-      <View>
-        <LoginScreen />
-      </View>
-    );
+    return <LoginScreen />;
   }
 }
 
