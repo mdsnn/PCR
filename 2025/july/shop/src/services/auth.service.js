@@ -1,110 +1,113 @@
-const db = require("../config/db");
-const { users, refreshTokens } = require("../models/user.model");
-const { eq, and, gt } = require("drizzle-orm");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { db } = require("../config/db");
+const { users } = require("../models/user.model");
+const { eq } = require("drizzle-orm");
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "15m";
-const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || "7d";
+class AuthService {
+  async signup(email, password) {
+    try {
+      // Check if user already exists
+      const existingUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
 
-async function generateTokens(userId) {
-  const accessToken = jwt.sign({ id: userId }, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
-  });
-  const refreshToken = jwt.sign(
-    { id: userId },
-    JWT_SECRET + REFRESH_TOKEN_SECRET_SUFFIX,
-    {
-      expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+      if (existingUser.length) {
+        throw new Error("User already exists with this email");
+      }
+
+      // Hash password
+      const saltRounds = 12;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Create user
+      const newUser = await db
+        .insert(users)
+        .values({
+          email,
+          password: hashedPassword,
+        })
+        .returning({
+          id: users.id,
+          email: users.email,
+          createdAt: users.createdAt,
+        });
+
+      return newUser[0];
+    } catch (error) {
+      throw error;
     }
-  );
-
-  // Store refresh token in database
-  await db.insert(refreshTokens).values({
-    userId,
-    token: refreshToken,
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-  });
-
-  return { accessToken, refreshToken };
-}
-
-async function registerUser(email, password) {
-  const existingUser = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, email));
-
-  if (existingUser.length > 0) {
-    throw new Error("Email already in use");
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const [newUser] = await db
-    .insert(users)
-    .values({ email, password: hashedPassword })
-    .returning();
+  generateTokens(userId) {
+    const payload = { id: userId };
 
-  return newUser;
-}
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
 
-async function loginUser(email, password) {
-  const [user] = await db.select().from(users).where(eq(users.email, email));
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+    });
 
-  if (!user) {
-    throw new Error("Invalid credentials");
+    return { accessToken, refreshToken };
   }
 
-  const isValidPassword = await bcrypt.compare(password, user.password);
-
-  if (!isValidPassword) {
-    throw new Error("Invalid credentials");
+  async saveRefreshToken(userId, refreshToken) {
+    try {
+      await db.update(users).set({ refreshToken }).where(eq(users.id, userId));
+    } catch (error) {
+      throw error;
+    }
   }
 
-  const { accessToken, refreshToken } = await generateTokens(user.id);
+  async refreshAccessToken(refreshToken) {
+    try {
+      // Verify refresh token
+      const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
-  return { user, accessToken, refreshToken };
-}
+      // Find user with this refresh token
+      const user = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, payload.id))
+        .limit(1);
 
-async function refreshAccessToken(refreshToken) {
-  // Verify refresh token
-  const decoded = jwt.verify(
-    refreshToken,
-    JWT_SECRET + REFRESH_TOKEN_SECRET_SUFFIX
-  );
+      if (!user.length || user[0].refreshToken !== refreshToken) {
+        throw new Error("Invalid refresh token");
+      }
 
-  // Check if refresh token exists in database and isn't expired
-  const [tokenRecord] = await db
-    .select()
-    .from(refreshTokens)
-    .where(
-      and(
-        eq(refreshTokens.token, refreshToken),
-        eq(refreshTokens.userId, decoded.id),
-        gt(refreshTokens.expiresAt, new Date())
-      )
-    );
+      // Generate new tokens
+      const tokens = this.generateTokens(user[0].id);
 
-  if (!tokenRecord) {
-    throw new Error("Invalid refresh token");
+      // Save new refresh token
+      await this.saveRefreshToken(user[0].id, tokens.refreshToken);
+
+      return {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        user: {
+          id: user[0].id,
+          email: user[0].email,
+        },
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
-  // Generate new access token
-  const accessToken = jwt.sign({ id: decoded.id }, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
-  });
-
-  return { accessToken };
+  async logout(userId) {
+    try {
+      await db
+        .update(users)
+        .set({ refreshToken: null })
+        .where(eq(users.id, userId));
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
-async function logoutUser(refreshToken) {
-  await db.delete(refreshTokens).where(eq(refreshTokens.token, refreshToken));
-}
-
-module.exports = {
-  registerUser,
-  loginUser,
-  refreshAccessToken,
-  logoutUser,
-};
+module.exports = new AuthService();
