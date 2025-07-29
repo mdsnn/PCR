@@ -1,46 +1,34 @@
 const yup = require("yup");
 
-const emailSchema = yup
-  .string()
-  .email("Invalid email format")
-  .required("Email is required")
-  .trim()
-  .lowercase();
-
-const passwordSchema = yup
-  .string()
-  .required("Password is required")
-  .min(6, "Password must be at least 6 characters")
-  .max(50, "Password too long");
-
-const passwordConfirmationSchema = yup
-  .string()
-  .required("Password confirmation is required")
-  .oneOf([yup.ref("password"), null], "Passwords must match");
-
-// Registration schema
-const registrationSchema = yup.object().shape({
-  email: emailSchema,
-  password: passwordSchema,
-  passwordConfirmation: passwordConfirmationSchema,
+const signupSchema = yup.object({
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password"), null], "Passwords must match")
+    .required("Password confirmation is required"),
 });
 
-// Login schema
-const loginSchema = yup.object().shape({
-  email: emailSchema,
-  password: passwordSchema,
+const loginSchema = yup.object({
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  password: yup.string().required("Password is required"),
 });
 
-// Refresh token schema
-const refreshTokenSchema = yup.object().shape({
+const refreshTokenSchema = yup.object({
   refreshToken: yup.string().required("Refresh token is required"),
 });
 
 module.exports = {
-  emailSchema,
-  passwordSchema,
-  passwordConfirmationSchema,
-  registrationSchema,
+  signupSchema,
   loginSchema,
   refreshTokenSchema,
 };
