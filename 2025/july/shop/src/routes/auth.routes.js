@@ -1,15 +1,22 @@
 const express = require("express");
+const { body } = require("express-validator");
 const {
   registerUser,
   loginUser,
   refreshAccessToken,
   logoutUser,
 } = require("../services/auth.service");
-const { body } = require("express-validator");
-const validate = require("../middleware/validate");
+const {
+  handleValidationErrors,
+  validateRegistration,
+  validateLogin,
+  validateRefreshToken,
+} = require("../middleware/validate");
+const { generateTokens } = require("../utils/token.utils"); // assuming token generator here
 
 const router = express.Router();
 
+// Register
 router.post(
   "/register",
   [
@@ -21,8 +28,9 @@ router.post(
       }
       return true;
     }),
+    handleValidationErrors,
+    validateRegistration,
   ],
-  validate,
   async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -35,10 +43,15 @@ router.post(
   }
 );
 
+// Login
 router.post(
   "/login",
-  [body("email").isEmail().normalizeEmail(), body("password").notEmpty()],
-  validate,
+  [
+    body("email").isEmail().normalizeEmail(),
+    body("password").notEmpty(),
+    handleValidationErrors,
+    validateLogin,
+  ],
   async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -53,7 +66,8 @@ router.post(
   }
 );
 
-router.post("/refresh-token", async (req, res) => {
+// Refresh Token
+router.post("/refresh-token", validateRefreshToken, async (req, res) => {
   try {
     const { refreshToken } = req.body;
     const { accessToken } = await refreshAccessToken(refreshToken);
@@ -63,7 +77,8 @@ router.post("/refresh-token", async (req, res) => {
   }
 });
 
-router.post("/logout", async (req, res) => {
+// Logout
+router.post("/logout", validateRefreshToken, async (req, res) => {
   try {
     const { refreshToken } = req.body;
     await logoutUser(refreshToken);
