@@ -1,19 +1,35 @@
-require("dotenv").config();
 const express = require("express");
-const passport = require("passport");
-const cors = require("cors");
-const authRoutes = require("./routes/auth.routes");
-require("./config/passport.config");
+const authRoutes = require("./auth.routes");
+const { authenticate } = require("../middleware/authenticate");
+const router = express.Router();
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-app.use(cors());
-app.use(express.json());
-app.use(passport.initialize());
-
-app.use("/api/auth", authRoutes);
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+/**
+ * Health check endpoint
+ */
+router.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", timestamp: new Date() });
 });
+
+/**
+ * API Routes
+ */
+router.use("/auth", authRoutes);
+
+/**
+ * Protected test route (example)
+ */
+router.get("/protected", authenticate, (req, res) => {
+  res.json({
+    message: "You have accessed a protected route",
+    user: req.user,
+  });
+});
+
+/**
+ * Handle 404 routes
+ */
+router.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
+
+module.exports = router;
