@@ -1,4 +1,3 @@
-// Same imports as your login screen
 import { useRef, useState, useEffect } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
@@ -29,13 +28,13 @@ const FloatingCircle = ({ size, top, left, right, bottom, delay }) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.loop(
+    const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(animatedValue, {
           toValue: 1,
           duration: 3000,
           useNativeDriver: true,
-          delay,
+          delay: delay,
         }),
         Animated.timing(animatedValue, {
           toValue: 0,
@@ -43,7 +42,8 @@ const FloatingCircle = ({ size, top, left, right, bottom, delay }) => {
           useNativeDriver: true,
         }),
       ])
-    ).start();
+    );
+    animation.start();
   }, []);
 
   const translateY = animatedValue.interpolate({
@@ -80,7 +80,7 @@ const FloatingCircle = ({ size, top, left, right, bottom, delay }) => {
   );
 };
 
-// Yup schema with confirmPassword
+// Yup validation schema for signup
 const schema = Yup.object().shape({
   email: Yup.string()
     .email("Invalid email format")
@@ -89,8 +89,8 @@ const schema = Yup.object().shape({
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password")], "Passwords must match")
-    .required("Confirm Password is required"),
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .required("Please confirm your password"),
 });
 
 const SignupScreen = () => {
@@ -103,7 +103,6 @@ const SignupScreen = () => {
     resolver: yupResolver(schema),
     mode: "onChange",
   });
-
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
@@ -133,8 +132,12 @@ const SignupScreen = () => {
     ]).start();
 
     setTimeout(() => {
-      Alert.alert("Success", `Account created for ${data.email}`);
-    }, 1000);
+      Alert.alert("Success", `Account created for ${data.email}!`);
+    }, 1500);
+  };
+
+  const handleSignIn = () => {
+    Alert.alert("Sign In", "Navigate to sign in screen.");
   };
 
   const containerTranslateY = containerAnimation.interpolate({
@@ -150,10 +153,14 @@ const SignupScreen = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
+
       <LinearGradient
         colors={["#22c55e", "#16a34a"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={styles.background}
       />
+
       <FloatingCircle size={80} top="20%" left="10%" delay={0} />
       <FloatingCircle size={120} top="60%" right="15%" delay={2000} />
       <FloatingCircle size={60} bottom="20%" left="20%" delay={4000} />
@@ -168,7 +175,7 @@ const SignupScreen = () => {
         >
           <Animated.View
             style={[
-              styles.loginContainer,
+              styles.signupContainer,
               {
                 transform: [{ translateY: containerTranslateY }],
                 opacity: containerOpacity,
@@ -180,7 +187,7 @@ const SignupScreen = () => {
                 <Text style={styles.logoTitle}>POTBELLY ERA</Text>
               </View>
 
-              {/* Email */}
+              {/* Email Input */}
               <View style={styles.inputGroup}>
                 <View style={styles.inputWrapper}>
                   <Ionicons
@@ -199,6 +206,8 @@ const SignupScreen = () => {
                         placeholderTextColor="#a0aec0"
                         keyboardType="email-address"
                         autoCapitalize="none"
+                        autoComplete="off"
+                        autoCorrect={false}
                         value={value}
                         onChangeText={onChange}
                         onBlur={onBlur}
@@ -211,38 +220,44 @@ const SignupScreen = () => {
                 )}
               </View>
 
-              {/* Password */}
+              {/* Password Input */}
               <View style={styles.inputGroup}>
-                <View style={styles.inputWrapper}>
-                  <Controller
-                    control={control}
-                    name="password"
-                    render={({ field: { onChange, value, onBlur } }) => (
-                      <>
-                        <TextInput
-                          placeholder="Password"
-                          placeholderTextColor="#888"
-                          style={styles.input}
-                          secureTextEntry={!passwordVisible}
-                          autoCapitalize="none"
-                          value={value}
-                          onChangeText={onChange}
-                          onBlur={onBlur}
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <View style={styles.inputWrapper}>
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={20}
+                        color="#a0aec0"
+                        style={styles.inputIcon}
+                      />
+                      <TextInput
+                        placeholder="Create a password"
+                        placeholderTextColor="#a0aec0"
+                        style={styles.input}
+                        secureTextEntry={!passwordVisible}
+                        autoComplete="off"
+                        autoCorrect={false}
+                        autoCapitalize="none"
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                      />
+                      <TouchableOpacity
+                        style={styles.visibilityToggle}
+                        onPress={() => setPasswordVisible((prev) => !prev)}
+                      >
+                        <MaterialCommunityIcons
+                          name={passwordVisible ? "eye-off" : "eye"}
+                          size={24}
+                          color="#a0aec0"
                         />
-                        <TouchableOpacity
-                          onPress={() => setPasswordVisible(!passwordVisible)}
-                          style={styles.visibilityToggle}
-                        >
-                          <MaterialCommunityIcons
-                            name={passwordVisible ? "eye-off" : "eye"}
-                            size={24}
-                            color="#888"
-                          />
-                        </TouchableOpacity>
-                      </>
-                    )}
-                  />
-                </View>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                />
                 {errors.password && (
                   <Text style={styles.errorText}>
                     {errors.password.message}
@@ -250,40 +265,46 @@ const SignupScreen = () => {
                 )}
               </View>
 
-              {/* Confirm Password */}
+              {/* Confirm Password Input */}
               <View style={styles.inputGroup}>
-                <View style={styles.inputWrapper}>
-                  <Controller
-                    control={control}
-                    name="confirmPassword"
-                    render={({ field: { onChange, value, onBlur } }) => (
-                      <>
-                        <TextInput
-                          placeholder="Confirm Password"
-                          placeholderTextColor="#888"
-                          style={styles.input}
-                          secureTextEntry={!confirmPasswordVisible}
-                          autoCapitalize="none"
-                          value={value}
-                          onChangeText={onChange}
-                          onBlur={onBlur}
+                <Controller
+                  control={control}
+                  name="confirmPassword"
+                  render={({ field: { onChange, value, onBlur } }) => (
+                    <View style={styles.inputWrapper}>
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={20}
+                        color="#a0aec0"
+                        style={styles.inputIcon}
+                      />
+                      <TextInput
+                        placeholder="Confirm your password"
+                        placeholderTextColor="#a0aec0"
+                        style={styles.input}
+                        secureTextEntry={!confirmPasswordVisible}
+                        autoComplete="off"
+                        autoCorrect={false}
+                        autoCapitalize="none"
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                      />
+                      <TouchableOpacity
+                        style={styles.visibilityToggle}
+                        onPress={() =>
+                          setConfirmPasswordVisible((prev) => !prev)
+                        }
+                      >
+                        <MaterialCommunityIcons
+                          name={confirmPasswordVisible ? "eye-off" : "eye"}
+                          size={24}
+                          color="#a0aec0"
                         />
-                        <TouchableOpacity
-                          onPress={() =>
-                            setConfirmPasswordVisible(!confirmPasswordVisible)
-                          }
-                          style={styles.visibilityToggle}
-                        >
-                          <MaterialCommunityIcons
-                            name={confirmPasswordVisible ? "eye-off" : "eye"}
-                            size={24}
-                            color="#888"
-                          />
-                        </TouchableOpacity>
-                      </>
-                    )}
-                  />
-                </View>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                />
                 {errors.confirmPassword && (
                   <Text style={styles.errorText}>
                     {errors.confirmPassword.message}
@@ -294,28 +315,41 @@ const SignupScreen = () => {
               {/* Sign Up Button */}
               <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
                 <TouchableOpacity
-                  style={styles.signInButton}
+                  style={styles.signUpButton}
                   onPress={handleSubmit(onSubmit)}
                   disabled={isSubmitting}
+                  activeOpacity={0.8}
                 >
                   <LinearGradient
                     colors={["#22c55e", "#16a34a"]}
-                    style={styles.signInGradient}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.signUpGradient}
                   >
                     {isSubmitting ? (
                       <View style={styles.loadingContainer}>
                         <ActivityIndicator size="small" color="#fff" />
-                        <Text style={styles.signInButtonText}>
+                        <Text style={styles.signUpButtonText}>
                           {" "}
-                          Creating...
+                          Creating Account...
                         </Text>
                       </View>
                     ) : (
-                      <Text style={styles.signInButtonText}>Sign Up</Text>
+                      <Text style={styles.signUpButtonText}>
+                        Create Account
+                      </Text>
                     )}
                   </LinearGradient>
                 </TouchableOpacity>
               </Animated.View>
+
+              {/* Sign In Link */}
+              <View style={styles.signInContainer}>
+                <Text style={styles.signInText}>Already have an account? </Text>
+                <TouchableOpacity onPress={handleSignIn}>
+                  <Text style={styles.signInLink}>Sign In</Text>
+                </TouchableOpacity>
+              </View>
             </BlurView>
           </Animated.View>
         </ScrollView>
@@ -344,7 +378,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
   },
-  loginContainer: {
+  signupContainer: {
     borderRadius: 24,
     overflow: "hidden",
     marginHorizontal: 20,
@@ -361,42 +395,48 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: "500",
     color: "#2d3748",
-    marginBottom: 8,
+    marginBottom: 6,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#718096",
+    fontWeight: "400",
   },
   inputGroup: { marginBottom: 24 },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 12,
+    borderColor: "#e2e8f0",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  textInput: {
+    flex: 1,
+    height: 48,
+    color: "#2d3748",
+    fontSize: 16,
   },
   input: {
     flex: 1,
     height: 48,
-    color: "#000",
+    color: "#2d3748",
+    fontSize: 16,
   },
   visibilityToggle: {
-    padding: 5,
+    padding: 8,
   },
   errorText: {
-    color: "red",
-    marginBottom: 8,
+    color: "#e53e3e",
+    fontSize: 14,
+    marginTop: 8,
     marginLeft: 4,
   },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginBottom: 24,
-    marginTop: -8,
-  },
-  forgotPasswordText: {
-    color: "#22c55e",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  signInButton: {
+  signUpButton: {
     borderRadius: 12,
     overflow: "hidden",
     marginBottom: 32,
@@ -406,65 +446,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  signInGradient: {
+  signUpGradient: {
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
   },
-  signInButtonText: {
+  signUpButtonText: {
     color: "white",
     fontSize: 18,
     fontWeight: "600",
   },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#e2e8f0",
-  },
-  dividerText: {
-    color: "#718096",
-    fontSize: 14,
-    paddingHorizontal: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-  },
-  socialLoginContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-    marginBottom: 24,
-  },
-  socialButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderWidth: 2,
-    borderColor: "#e2e8f0",
-    borderRadius: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-  },
-  socialButtonText: {
-    color: "#4a5568",
-    fontWeight: "500",
-    marginLeft: 8,
-  },
-  signUpContainer: {
+  signInContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
-  signUpText: {
+  signInText: {
     color: "#718096",
     fontSize: 14,
   },
-  signUpLink: {
+  signInLink: {
     color: "#22c55e",
     fontSize: 14,
     fontWeight: "600",
