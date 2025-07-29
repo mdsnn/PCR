@@ -1,35 +1,49 @@
 const express = require("express");
-const authRoutes = require("./routes/auth.routes");
-const { authenticate } = require("./middleware/authenticate");
-const router = express.Router();
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const passport = require("./config/passport.config");
+const routes = require("./routes");
+require("dotenv").config();
 
-/**
- * Health check endpoint
- */
-router.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK", timestamp: new Date() });
-});
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-/**
- * API Routes
- */
-router.use("/auth", authRoutes);
+// Middleware
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:19006"], // Add your Expo dev server URL
+    credentials: true,
+  })
+);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-/**
- * Protected test route (example)
- */
-router.get("/protected", authenticate, (req, res) => {
-  res.json({
-    message: "You have accessed a protected route",
-    user: req.user,
+// Initialize Passport
+app.use(passport.initialize());
+
+// Routes
+app.use("/api", routes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: "Something went wrong!",
   });
 });
 
-/**
- * Handle 404 routes
- */
-router.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
+// 404 handler
+app.use("*", (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
 });
 
-module.exports = router;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+module.exports = app;
