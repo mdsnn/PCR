@@ -11,7 +11,6 @@ export default function Page() {
         <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
         <Button
           title="Sign Out"
-          onPress={handleSignOut}
           color="#ff0000" // Optional: customize button color
         />
       </SignedIn>
