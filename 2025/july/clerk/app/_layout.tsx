@@ -1,5 +1,10 @@
-import { Stack } from "expo-router";
+import { ClerkProvider } from '@clerk/clerk-expo'
+import { Slot } from 'expo-router'
 
-export default function RootLayout() {
-  return <Stack />;
+function RootLayoutNav() {
+  return (
+    <ClerkProvider>
+      <Slot />
+    </ClerkProvider>
+  )
 }
