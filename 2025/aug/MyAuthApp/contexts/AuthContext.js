@@ -41,17 +41,20 @@ export const AuthProvider = ({ children }) => {
         password,
       });
 
-      const { user, token } = response.data;
+      const { user: authUser, token: authToken } = response.data;
 
-      await AsyncStorage.setItem("auth_token", token);
-      await AsyncStorage.setItem("user", JSON.stringify(user));
+      console.log("Login success", authToken, authUser);
 
-      setUser(user);
-      setToken(token);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      await AsyncStorage.setItem("auth_token", authToken);
+      await AsyncStorage.setItem("user", JSON.stringify(authUser));
+
+      setUser(authUser);
+      setToken(authToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
 
       return { success: true };
     } catch (error) {
+      console.log("Login error", error.response?.data);
       return {
         success: false,
         error: error.response?.data?.message || "Login failed",
