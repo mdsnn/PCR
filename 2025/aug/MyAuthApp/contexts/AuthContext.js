@@ -1,10 +1,10 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
-const API_URL = 'http://your-laravel-app.com/api'; // Change this to your Laravel API URL
+const API_URL = "http://192.168.82.233:8000/api"; // Change this to your Laravel API URL
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -17,16 +17,18 @@ export const AuthProvider = ({ children }) => {
 
   const loadStoredAuth = async () => {
     try {
-      const storedToken = await AsyncStorage.getItem('auth_token');
-      const storedUser = await AsyncStorage.getItem('user');
-      
+      const storedToken = await AsyncStorage.getItem("auth_token");
+      const storedUser = await AsyncStorage.getItem("user");
+
       if (storedToken && storedUser) {
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
-        axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${storedToken}`;
       }
     } catch (error) {
-      console.error('Error loading stored auth:', error);
+      console.error("Error loading stored auth:", error);
     } finally {
       setLoading(false);
     }
@@ -41,18 +43,18 @@ export const AuthProvider = ({ children }) => {
 
       const { user, token } = response.data;
 
-      await AsyncStorage.setItem('auth_token', token);
-      await AsyncStorage.setItem('user', JSON.stringify(user));
+      await AsyncStorage.setItem("auth_token", token);
+      await AsyncStorage.setItem("user", JSON.stringify(user));
 
       setUser(user);
       setToken(token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       return { success: true };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || 'Login failed',
+        error: error.response?.data?.message || "Login failed",
       };
     }
   };
@@ -67,18 +69,18 @@ export const AuthProvider = ({ children }) => {
 
       const { user, token } = response.data;
 
-      await AsyncStorage.setItem('auth_token', token);
-      await AsyncStorage.setItem('user', JSON.stringify(user));
+      await AsyncStorage.setItem("auth_token", token);
+      await AsyncStorage.setItem("user", JSON.stringify(user));
 
       setUser(user);
       setToken(token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       return { success: true };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || 'Registration failed',
+        error: error.response?.data?.message || "Registration failed",
       };
     }
   };
@@ -89,13 +91,13 @@ export const AuthProvider = ({ children }) => {
         await axios.post(`${API_URL}/logout`);
       }
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
-      await AsyncStorage.removeItem('auth_token');
-      await AsyncStorage.removeItem('user');
+      await AsyncStorage.removeItem("auth_token");
+      await AsyncStorage.removeItem("user");
       setUser(null);
       setToken(null);
-      delete axios.defaults.headers.common['Authorization'];
+      delete axios.defaults.headers.common["Authorization"];
     }
   };
 
@@ -118,7 +120,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
