@@ -160,20 +160,17 @@ export default function FloatingActionGamepad() {
             outputRange: [0, 1],
           });
 
-          // Calculate label position based on button position
+          // Calculate label position - place labels below buttons to avoid screen edge issues
           const labelTranslateX = anim.interpolate({
             inputRange: [0, 1],
-            outputRange: [
-              0,
-              btn.dx > 0 ? btn.dx + 35 : btn.dx < 0 ? btn.dx - 35 : 0,
-            ],
+            outputRange: [0, btn.dx],
           });
           const labelTranslateY = anim.interpolate({
             inputRange: [0, 1],
             outputRange: [
               0,
-              btn.dy > 0 ? btn.dy + 35 : btn.dy < 0 ? btn.dy - 35 : 0,
-            ],
+              btn.dy > 0 ? btn.dy + 40 : btn.dy < 0 ? btn.dy - 40 : 50,
+            ], // Always place labels below or at consistent distance
           });
 
           return (
@@ -302,7 +299,7 @@ const styles = StyleSheet.create({
   fabContainer: {
     position: "absolute",
     bottom: 100,
-    right: 80,
+    right: 120, // Moved further left to give space for labels
     alignItems: "center",
     justifyContent: "center",
   },
