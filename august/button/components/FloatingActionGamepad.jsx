@@ -10,50 +10,22 @@ import {
 } from "react-native";
 
 const positions = [
-  {
-    label: "△",
-    dx: 0,
-    dy: -70,
-    color: "#FF6B6B",
-    name: "Check-In",
-    key: "checkin",
-  },
-  {
-    label: "□",
-    dx: -70,
-    dy: 0,
-    color: "#4ECDC4",
-    name: "Events",
-    key: "events",
-  },
-  {
-    label: "○",
-    dx: 70,
-    dy: 0,
-    color: "#45B7D1",
-    name: "Food Pic",
-    key: "foodpic",
-  },
-  {
-    label: "✕",
-    dx: 0,
-    dy: 70,
-    color: "#96CEB4",
-    name: "Cook Live",
-    key: "cooking",
-  },
+  { label: "△", dx: 0, dy: -60, color: "#FF6B6B", name: "Triangle" },
+  { label: "□", dx: -60, dy: 0, color: "#4ECDC4", name: "Square" },
+  { label: "○", dx: 60, dy: 0, color: "#45B7D1", name: "Circle" },
+  { label: "✕", dx: 0, dy: 60, color: "#96CEB4", name: "X" },
 ];
 
 export default function FloatingActionGamepad() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const anim = useRef(new Animated.Value(0)).current; // 0 = collapsed, 1 = expanded
+  const anim = useRef(new Animated.Value(0)).current;
 
-  // Press scale for each button (tactile shrink)
+  // Button press shrink effect
   const pressScales = positions.map(
     () => useRef(new Animated.Value(1)).current
   );
 
-  // Ripple glow values for each button
+  // Ripple glow values
   const rippleScales = positions.map(
     () => useRef(new Animated.Value(0)).current
   );
@@ -70,9 +42,8 @@ export default function FloatingActionGamepad() {
     }).start(() => setIsExpanded(!isExpanded));
   };
 
-  // Visuals only: press-in ripple + shrink (trigger onPressIn)
-  const startPressVisuals = (idx) => {
-    // reset ripple start values
+  const handleButtonPress = (name, idx) => {
+    // Ripple animation
     rippleScales[idx].setValue(0.8);
     rippleOpacities[idx].setValue(0.4);
 
@@ -91,57 +62,19 @@ export default function FloatingActionGamepad() {
       ]),
       Animated.timing(rippleScales[idx], {
         toValue: 2,
-        duration: 420,
+        duration: 400,
         easing: Easing.out(Easing.quad),
         useNativeDriver: true,
       }),
       Animated.timing(rippleOpacities[idx], {
         toValue: 0,
-        duration: 420,
+        duration: 400,
         easing: Easing.out(Easing.quad),
         useNativeDriver: true,
       }),
-    ]).start();
-  };
-
-  // Action handlers (replace with real navigation/modals/integration)
-  const onCheckIn = () => {
-    // open check-in modal with broadcast options (now / after 6 hours / custom)
-    console.log("Open check-in modal (broadcast now / after 6h / custom)");
-  };
-
-  const onCreateEvent = () => {
-    // open event creation flow (invite friends)
-    console.log("Open create event flow");
-  };
-
-  const onTakeFoodPic = () => {
-    // open camera/upload flow, then broadcast
-    console.log("Open camera / image picker for food pic");
-  };
-
-  const onStartCookingSession = () => {
-    // start an Agora live session or recipe post flow
-    console.log("Start Agora cooking session or open recipe composer");
-  };
-
-  const handleAction = (key) => {
-    switch (key) {
-      case "checkin":
-        onCheckIn();
-        break;
-      case "events":
-        onCreateEvent();
-        break;
-      case "foodpic":
-        onTakeFoodPic();
-        break;
-      case "cooking":
-        onStartCookingSession();
-        break;
-      default:
-        console.log("Unknown action", key);
-    }
+    ]).start(() => {
+      console.log(`${name} button pressed!`);
+    });
   };
 
   return (
@@ -153,7 +86,6 @@ export default function FloatingActionGamepad() {
         </Text>
       </View>
 
-      {/* FAB / Gamepad Hub */}
       <View style={styles.fabContainer}>
         {positions.map((btn, idx) => {
           const translateX = anim.interpolate({
@@ -164,91 +96,56 @@ export default function FloatingActionGamepad() {
             inputRange: [0, 1],
             outputRange: [0, btn.dy],
           });
-          const appearScale = anim.interpolate({
+          const scale = anim.interpolate({
             inputRange: [0, 1],
             outputRange: [0, 1],
           });
 
-          // label animations: fade & slight upward slide when expanding
-          const labelOpacity = anim;
-          const labelTranslateY = anim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [8, 0],
-          });
-
           return (
             <Animated.View
-              key={btn.key}
+              key={idx}
               style={[
-                styles.buttonWrapper,
+                styles.gameButton,
                 {
-                  transform: [{ translateX }, { translateY }],
+                  transform: [{ translateX }, { translateY }, { scale }],
                   opacity: anim,
                 },
               ]}
-              pointerEvents={isExpanded ? "auto" : "none"}
             >
-              {/* Container to center the button and label */}
-              <View style={styles.buttonAndLabel}>
-                {/* Animated button + ripple */}
-                <Animated.View
-                  style={[
-                    styles.gameButton,
-                    {
-                      transform: [{ scale: appearScale }],
-                    },
-                  ]}
+              {/* Ripple Glow Layer */}
+              <Animated.View
+                style={[
+                  styles.ripple,
+                  {
+                    backgroundColor: btn.color,
+                    transform: [{ scale: rippleScales[idx] }],
+                    opacity: rippleOpacities[idx],
+                  },
+                ]}
+              />
+              {/* Button */}
+              <Animated.View
+                style={[
+                  styles.gameButtonInner,
+                  {
+                    backgroundColor: btn.color,
+                    transform: [{ scale: pressScales[idx] }],
+                  },
+                ]}
+              >
+                <TouchableWithoutFeedback
+                  onPressIn={() => handleButtonPress(btn.name, idx)}
                 >
-                  {/* Ripple Layer (behind button) */}
-                  <Animated.View
-                    pointerEvents="none"
-                    style={[
-                      styles.ripple,
-                      {
-                        backgroundColor: btn.color,
-                        transform: [{ scale: rippleScales[idx] }],
-                        opacity: rippleOpacities[idx],
-                      },
-                    ]}
-                  />
-
-                  {/* Touchable button */}
-                  <TouchableWithoutFeedback
-                    onPressIn={() => startPressVisuals(idx)}
-                    onPress={() => handleAction(btn.key)}
-                  >
-                    <Animated.View
-                      style={[
-                        styles.gameButtonInner,
-                        {
-                          backgroundColor: btn.color,
-                          transform: [{ scale: pressScales[idx] }],
-                        },
-                      ]}
-                    >
-                      <Text style={styles.gameButtonText}>{btn.label}</Text>
-                    </Animated.View>
-                  </TouchableWithoutFeedback>
-                </Animated.View>
-
-                {/* Label below button */}
-                <Animated.Text
-                  style={[
-                    styles.buttonLabel,
-                    {
-                      opacity: labelOpacity,
-                      transform: [{ translateY: labelTranslateY }],
-                    },
-                  ]}
-                >
-                  {btn.name}
-                </Animated.Text>
-              </View>
+                  <View style={styles.gameButtonInner}>
+                    <Text style={styles.gameButtonText}>{btn.label}</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              </Animated.View>
             </Animated.View>
           );
         })}
 
-        {/* FAB that becomes the center close button */}
+        {/* Center FAB */}
         <Animated.View
           style={[
             styles.fab,
@@ -257,7 +154,7 @@ export default function FloatingActionGamepad() {
                 {
                   scale: anim.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [1, 0.92],
+                    outputRange: [1, 0.9],
                   }),
                 },
               ],
@@ -290,7 +187,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
   },
-
   fabContainer: {
     position: "absolute",
     bottom: 100,
@@ -298,7 +194,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   fab: {
     width: 60,
     height: 60,
@@ -316,52 +211,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   fabText: { fontSize: 24, color: "white", fontWeight: "bold" },
-
-  /* Button wrapper positions the popup button relative to the FAB */
-  buttonWrapper: {
-    position: "absolute",
-    width: 90, // enough room for label under the button
-    height: 110,
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-
-  buttonAndLabel: {
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-
   gameButton: {
+    position: "absolute",
     width: 50,
     height: 50,
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     elevation: 6,
-    overflow: "visible", // so ripple can expand
   },
-
-  // Ripple sits behind the button and expands outward
-  ripple: {
-    position: "absolute",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-
   gameButtonInner: {
-    width: 50,
-    height: 50,
+    width: "100%",
+    height: "100%",
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
   },
   gameButtonText: { fontSize: 20, color: "white", fontWeight: "bold" },
-
-  buttonLabel: {
-    marginTop: 8,
-    fontSize: 12,
-    color: "#333",
-    textAlign: "center",
+  ripple: {
+    position: "absolute",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
 });
