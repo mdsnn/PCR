@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
+import Svg, { Text as SvgText } from "react-native-svg";
 
 export default function SplashScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -42,7 +43,22 @@ export default function SplashScreen() {
           },
         ]}
       >
-        <Text style={styles.title}>Potbelly</Text>
+        <View style={styles.logoContainer}>
+          <Svg width="320" height="80" viewBox="0 0 400 100">
+            <SvgText
+              x="200"
+              y="60"
+              fontFamily="Arial, Helvetica, sans-serif"
+              fontSize="32"
+              fontWeight="bold"
+              fill="#22C55E"
+              textAnchor="middle"
+              letterSpacing="2px"
+            >
+              POTBELLY
+            </SvgText>
+          </Svg>
+        </View>
         <Text style={styles.subtitle}>Delicious Food Awaits</Text>
       </Animated.View>
     </View>
@@ -59,13 +75,9 @@ const styles = StyleSheet.create({
   content: {
     alignItems: "center",
   },
-  title: {
-    fontSize: 48,
-    fontWeight: "bold",
-    color: "#10b981", // Emerald green
-    marginBottom: 8,
-    textAlign: "center",
-    letterSpacing: 2,
+  logoContainer: {
+    marginBottom: 20,
+    alignItems: "center",
   },
   subtitle: {
     fontSize: 18,
