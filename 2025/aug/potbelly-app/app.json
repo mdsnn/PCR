@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -25,6 +27,11 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "scheme": "potbelly-app"
+    "scheme": "potbelly-app",
+    "extra": {
+      "eas": {
+        "projectId": "cc8ae5e5-cd81-4cc1-bbf1-f3a63f4b5d14"
+      }
+    }
   }
 }
