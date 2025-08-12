@@ -13,8 +13,8 @@ import {
 } from "react-native";
 
 // Replace with your Supabase URL and anon key
-const SUPABASE_URL = "your-supabase-url";
-const SUPABASE_ANON_KEY = "your-supabase-anon-key";
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
