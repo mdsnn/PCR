@@ -4,14 +4,13 @@ import { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
-  KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
@@ -25,6 +24,7 @@ export default function App() {
   const [editingId, setEditingId] = useState(null);
   const [editingValue, setEditingValue] = useState("");
 
+  // Fetch names
   const fetchNames = async () => {
     const { data, error } = await supabase
       .from("names")
@@ -33,6 +33,7 @@ export default function App() {
     if (!error) setNames(data || []);
   };
 
+  // Add name
   const insertName = async () => {
     if (!name.trim()) return Alert.alert("Error", "Please enter a name");
     setLoading(true);
@@ -46,16 +47,19 @@ export default function App() {
     setLoading(false);
   };
 
+  // Delete name
   const deleteName = async (id) => {
     const { error } = await supabase.from("names").delete().eq("id", id);
     if (!error) fetchNames();
   };
 
+  // Start editing
   const startEditing = (item) => {
     setEditingId(item.id);
     setEditingValue(item.name);
   };
 
+  // Save edit
   const saveEdit = async () => {
     if (!editingValue.trim())
       return Alert.alert("Error", "Name cannot be empty");
@@ -78,10 +82,7 @@ export default function App() {
     <View style={styles.nameItem}>
       {editingId === item.id ? (
         <TextInput
-          style={[
-            styles.nameText,
-            { flex: 1, borderBottomWidth: 1, borderColor: "#ccc" },
-          ]}
+          style={[styles.nameText, styles.editInput]}
           value={editingValue}
           onChangeText={setEditingValue}
           onSubmitEditing={saveEdit}
@@ -89,7 +90,7 @@ export default function App() {
         />
       ) : (
         <TouchableOpacity
-          onLongPress={() => startEditing(item)}
+          onPress={() => startEditing(item)}
           style={{ flex: 1 }}
         >
           <Text style={styles.nameText}>{item.name}</Text>
@@ -116,9 +117,12 @@ export default function App() {
   );
 
   return (
-    <KeyboardAvoidingView
+    <KeyboardAwareScrollView
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      contentContainerStyle={{ flexGrow: 1 }}
+      enableOnAndroid={true}
+      extraScrollHeight={20}
+      keyboardShouldPersistTaps="handled"
     >
       <View style={styles.header}>
         <Text style={styles.title}>Name Manager</Text>
@@ -153,9 +157,10 @@ export default function App() {
           ListEmptyComponent={
             <Text style={styles.emptyText}>No names added yet</Text>
           }
+          keyboardShouldPersistTaps="handled"
         />
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -207,7 +212,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 2,
   },
-  nameText: { fontSize: 16, color: "#374151", fontWeight: "500" },
+  nameText: { fontSize: 16, color: "#374151", fontWeight: "500", flex: 1 },
+  editInput: {
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+    paddingVertical: 2,
+  },
   dateText: { fontSize: 12, color: "#6b7280", marginLeft: 10 },
   emptyText: {
     textAlign: "center",
