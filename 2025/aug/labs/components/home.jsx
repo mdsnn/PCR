@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -11,13 +10,10 @@ import {
   View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+import { useAuth } from "../authcontext/AuthProvider";
 
 export default function App() {
+  const { user, supabase } = useAuth();
   const [name, setName] = useState("");
   const [names, setNames] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,12 +21,14 @@ export default function App() {
   const [editingValue, setEditingValue] = useState("");
 
   // Fetch names
+
   const fetchNames = async () => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("names")
       .select("*")
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
-    if (!error) setNames(data || []);
+    setNames(data || []);
   };
 
   // Add name
@@ -39,12 +37,20 @@ export default function App() {
     setLoading(true);
     const { error } = await supabase
       .from("names")
-      .insert([{ name: name.trim() }]);
+      .insert([{ name: name.trim(), user_id: user.id }]);
     if (!error) {
       setName("");
       fetchNames();
     }
     setLoading(false);
+  };
+  const addName = async () => {
+    if (!name.trim()) return;
+    await supabase
+      .from("names")
+      .insert([{ name: name.trim(), user_id: user.id }]);
+    setName("");
+    fetchNames();
   };
 
   // Delete name
