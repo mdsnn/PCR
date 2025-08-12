@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import {
@@ -12,7 +13,6 @@ import {
   View,
 } from "react-native";
 
-// Replace with your Supabase URL and anon key
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -22,68 +22,96 @@ export default function App() {
   const [name, setName] = useState("");
   const [names, setNames] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editingValue, setEditingValue] = useState("");
 
-  // Fetch names from Supabase
   const fetchNames = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("names")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching names:", error);
-        Alert.alert("Error", "Failed to fetch names");
-      } else {
-        setNames(data || []);
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      Alert.alert("Error", "Something went wrong");
-    }
+    const { data, error } = await supabase
+      .from("names")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (!error) setNames(data || []);
   };
 
-  // Insert name to Supabase
   const insertName = async () => {
-    if (!name.trim()) {
-      Alert.alert("Error", "Please enter a name");
-      return;
-    }
-
+    if (!name.trim()) return Alert.alert("Error", "Please enter a name");
     setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("names")
-        .insert([{ name: name.trim() }])
-        .select();
+    const { error } = await supabase
+      .from("names")
+      .insert([{ name: name.trim() }]);
+    if (!error) {
+      setName("");
+      fetchNames();
+    }
+    setLoading(false);
+  };
 
-      if (error) {
-        console.error("Error inserting name:", error);
-        Alert.alert("Error", "Failed to add name");
-      } else {
-        setName("");
-        fetchNames(); // Refresh the list
-        Alert.alert("Success", "Name added successfully!");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      Alert.alert("Error", "Something went wrong");
-    } finally {
-      setLoading(false);
+  const deleteName = async (id) => {
+    const { error } = await supabase.from("names").delete().eq("id", id);
+    if (!error) fetchNames();
+  };
+
+  const startEditing = (item) => {
+    setEditingId(item.id);
+    setEditingValue(item.name);
+  };
+
+  const saveEdit = async () => {
+    if (!editingValue.trim())
+      return Alert.alert("Error", "Name cannot be empty");
+    const { error } = await supabase
+      .from("names")
+      .update({ name: editingValue.trim() })
+      .eq("id", editingId);
+    if (!error) {
+      setEditingId(null);
+      setEditingValue("");
+      fetchNames();
     }
   };
 
-  // Load names when component mounts
   useEffect(() => {
     fetchNames();
   }, []);
 
   const renderNameItem = ({ item }) => (
     <View style={styles.nameItem}>
-      <Text style={styles.nameText}>{item.name}</Text>
+      {editingId === item.id ? (
+        <TextInput
+          style={[
+            styles.nameText,
+            { flex: 1, borderBottomWidth: 1, borderColor: "#ccc" },
+          ]}
+          value={editingValue}
+          onChangeText={setEditingValue}
+          onSubmitEditing={saveEdit}
+          autoFocus
+        />
+      ) : (
+        <TouchableOpacity
+          onLongPress={() => startEditing(item)}
+          style={{ flex: 1 }}
+        >
+          <Text style={styles.nameText}>{item.name}</Text>
+        </TouchableOpacity>
+      )}
+
       <Text style={styles.dateText}>
         {new Date(item.created_at).toLocaleDateString()}
       </Text>
+
+      {editingId === item.id ? (
+        <TouchableOpacity onPress={saveEdit} style={{ marginLeft: 10 }}>
+          <Ionicons name="checkmark" size={22} color="green" />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={() => deleteName(item.id)}
+          style={{ marginLeft: 10 }}
+        >
+          <Ionicons name="trash" size={22} color="red" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -122,7 +150,6 @@ export default function App() {
           data={names}
           renderItem={renderNameItem}
           keyExtractor={(item) => item.id.toString()}
-          showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <Text style={styles.emptyText}>No names added yet</Text>
           }
@@ -133,16 +160,8 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  header: {
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    backgroundColor: "#6366f1",
-  },
+  container: { flex: 1, backgroundColor: "#f5f5f5" },
+  header: { paddingTop: 60, paddingBottom: 20, backgroundColor: "#6366f1" },
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -152,16 +171,8 @@ const styles = StyleSheet.create({
   formContainer: {
     padding: 20,
     backgroundColor: "white",
-    marginHorizontal: 20,
-    marginTop: -10,
+    margin: 20,
     borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
     elevation: 5,
   },
   input: {
@@ -178,18 +189,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
-  buttonDisabled: {
-    backgroundColor: "#9ca3af",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  listContainer: {
-    flex: 1,
-    padding: 20,
-  },
+  buttonDisabled: { backgroundColor: "#9ca3af" },
+  buttonText: { color: "white", fontSize: 16, fontWeight: "bold" },
+  listContainer: { flex: 1, padding: 20 },
   listTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -202,26 +204,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
     elevation: 2,
   },
-  nameText: {
-    fontSize: 16,
-    color: "#374151",
-    fontWeight: "500",
-  },
-  dateText: {
-    fontSize: 12,
-    color: "#6b7280",
-  },
+  nameText: { fontSize: 16, color: "#374151", fontWeight: "500" },
+  dateText: { fontSize: 12, color: "#6b7280", marginLeft: 10 },
   emptyText: {
     textAlign: "center",
     color: "#6b7280",
