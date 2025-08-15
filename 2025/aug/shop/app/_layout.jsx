@@ -1,26 +1,12 @@
-import { Stack } from "expo-router";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import LoadingScreen from "../components/LoadingScreen";
-import { initializeAuth } from "../lib/store/authSlice";
+import { Slot } from "expo-router";
+import { Provider } from "react-redux";
+import "../global.css";
+import { store } from "../lib/store/store";
 
 export default function RootLayout() {
-  const dispatch = useDispatch();
-  const { initialized } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    dispatch(initializeAuth());
-  }, [dispatch]);
-
-  if (!initialized) {
-    return <LoadingScreen />;
-  }
-
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(tabs)" />
-    </Stack>
+    <Provider store={store}>
+      <Slot />
+    </Provider>
   );
 }
