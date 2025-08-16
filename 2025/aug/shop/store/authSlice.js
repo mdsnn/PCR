@@ -1,16 +1,15 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { supabase } from '../lib/supabase';
-../lib/supabase
-// Async thunks for auth operations
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { supabase } from "../lib/supabase";
+
 export const signUp = createAsyncThunk(
-  'auth/signUp',
+  "auth/signUp",
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
-      
+
       if (error) throw error;
       return data;
     } catch (error) {
@@ -20,14 +19,14 @@ export const signUp = createAsyncThunk(
 );
 
 export const signIn = createAsyncThunk(
-  'auth/signIn',
+  "auth/signIn",
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      
+
       if (error) throw error;
       return data;
     } catch (error) {
@@ -37,7 +36,7 @@ export const signIn = createAsyncThunk(
 );
 
 export const signOut = createAsyncThunk(
-  'auth/signOut',
+  "auth/signOut",
   async (_, { rejectWithValue }) => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -49,37 +48,41 @@ export const signOut = createAsyncThunk(
   }
 );
 
-export const checkAuthState = createAsyncThunk(
-  'auth/checkAuthState',
-  async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    return session;
+export const getSession = createAsyncThunk(
+  "auth/getSession",
+  async (_, { rejectWithValue }) => {
+    try {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+      if (error) throw error;
+      return session;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState: {
     user: null,
     session: null,
     loading: false,
     error: null,
-    isAuthenticated: false,
   },
   reducers: {
     clearError: (state) => {
       state.error = null;
     },
-    setAuthState: (state, action) => {
-      const { session, user } = action.payload;
-      state.session = session;
-      state.user = user;
-      state.isAuthenticated = !!session;
+    setSession: (state, action) => {
+      state.session = action.payload;
+      state.user = action.payload?.user || null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Sign Up
       .addCase(signUp.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -88,13 +91,11 @@ const authSlice = createSlice({
         state.loading = false;
         state.session = action.payload.session;
         state.user = action.payload.user;
-        state.isAuthenticated = !!action.payload.session;
       })
       .addCase(signUp.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      // Sign In
       .addCase(signIn.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -103,35 +104,23 @@ const authSlice = createSlice({
         state.loading = false;
         state.session = action.payload.session;
         state.user = action.payload.user;
-        state.isAuthenticated = !!action.payload.session;
       })
       .addCase(signIn.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      // Sign Out
-      .addCase(signOut.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(signOut.fulfilled, (state) => {
-        state.loading = false;
-        state.session = null;
         state.user = null;
-        state.isAuthenticated = false;
-        state.error = null;
-      })
-      .addCase(signOut.rejected, (state, action) => {
+        state.session = null;
         state.loading = false;
-        state.error = action.payload;
       })
-      // Check Auth State
-      .addCase(checkAuthState.fulfilled, (state, action) => {
+      .addCase(getSession.fulfilled, (state, action) => {
         state.session = action.payload;
         state.user = action.payload?.user || null;
-        state.isAuthenticated = !!action.payload;
+        state.loading = false;
       });
   },
 });
 
-export const { clearError, setAuthState } = authSlice.actions;
+export const { clearError, setSession } = authSlice.actions;
 export default authSlice.reducer;
