@@ -1,17 +1,16 @@
-// lib/store/authSlice.js
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { supabase } from "../supabase";
-
-// Async thunks
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { supabase } from '../lib/supabase';
+../lib/supabase
+// Async thunks for auth operations
 export const signUp = createAsyncThunk(
-  "auth/signUp",
+  'auth/signUp',
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
-
+      
       if (error) throw error;
       return data;
     } catch (error) {
@@ -21,14 +20,14 @@ export const signUp = createAsyncThunk(
 );
 
 export const signIn = createAsyncThunk(
-  "auth/signIn",
+  'auth/signIn',
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-
+      
       if (error) throw error;
       return data;
     } catch (error) {
@@ -38,7 +37,7 @@ export const signIn = createAsyncThunk(
 );
 
 export const signOut = createAsyncThunk(
-  "auth/signOut",
+  'auth/signOut',
   async (_, { rejectWithValue }) => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -50,42 +49,32 @@ export const signOut = createAsyncThunk(
   }
 );
 
-export const initializeAuth = createAsyncThunk(
-  "auth/initialize",
-  async (_, { dispatch }) => {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      supabase.auth.onAuthStateChange((_event, session) => {
-        dispatch(setSession(session));
-      });
-
-      return session;
-    } catch (error) {
-      return null;
-    }
+export const checkAuthState = createAsyncThunk(
+  'auth/checkAuthState',
+  async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session;
   }
 );
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState: {
     user: null,
     session: null,
     loading: false,
     error: null,
-    initialized: false,
+    isAuthenticated: false,
   },
   reducers: {
-    setSession: (state, action) => {
-      state.session = action.payload;
-      state.user = action.payload?.user || null;
-      state.initialized = true;
-    },
     clearError: (state) => {
       state.error = null;
+    },
+    setAuthState: (state, action) => {
+      const { session, user } = action.payload;
+      state.session = session;
+      state.user = user;
+      state.isAuthenticated = !!session;
     },
   },
   extraReducers: (builder) => {
@@ -99,6 +88,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.session = action.payload.session;
         state.user = action.payload.user;
+        state.isAuthenticated = !!action.payload.session;
       })
       .addCase(signUp.rejected, (state, action) => {
         state.loading = false;
@@ -113,6 +103,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.session = action.payload.session;
         state.user = action.payload.user;
+        state.isAuthenticated = !!action.payload.session;
       })
       .addCase(signIn.rejected, (state, action) => {
         state.loading = false;
@@ -126,20 +117,21 @@ const authSlice = createSlice({
         state.loading = false;
         state.session = null;
         state.user = null;
+        state.isAuthenticated = false;
         state.error = null;
       })
       .addCase(signOut.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      // Initialize
-      .addCase(initializeAuth.fulfilled, (state, action) => {
+      // Check Auth State
+      .addCase(checkAuthState.fulfilled, (state, action) => {
         state.session = action.payload;
         state.user = action.payload?.user || null;
-        state.initialized = true;
+        state.isAuthenticated = !!action.payload;
       });
   },
 });
 
-export const { setSession, clearError } = authSlice.actions;
+export const { clearError, setAuthState } = authSlice.actions;
 export default authSlice.reducer;

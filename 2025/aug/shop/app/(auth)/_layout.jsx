@@ -1,13 +1,6 @@
-import { Redirect, Stack } from "expo-router";
-import { useSelector } from "react-redux";
+import { Stack } from "expo-router";
 
 export default function AuthLayout() {
-  const { user } = useSelector((state) => state.auth);
-
-  if (user) {
-    return <Redirect href="/(tabs)/home" />;
-  }
-
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" />
