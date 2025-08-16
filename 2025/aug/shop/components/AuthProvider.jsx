@@ -1,19 +1,12 @@
-import { useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { supabase } from "../lib/supabase";
-import { getSession, setSession } from "../store/authSlice";
+import { useDispatch } from "react-redux";
+import { setSession } from "../store/authSlice";
+import { supabase } from "../supabase";
 
-export default function AuthProvider({ children }) {
-  const { user, loading } = useSelector((state) => state.auth);
-  const segments = useSegments();
-  const router = useRouter();
+export default function AuthProvider() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Get initial session
-    dispatch(getSession());
-
     // Listen for auth changes
     const {
       data: { subscription },
@@ -24,17 +17,5 @@ export default function AuthProvider({ children }) {
     return () => subscription?.unsubscribe();
   }, [dispatch]);
 
-  useEffect(() => {
-    if (loading) return;
-
-    const inAuthGroup = segments[0] === "(auth)";
-
-    if (!user && !inAuthGroup) {
-      router.replace("/login");
-    } else if (user && inAuthGroup) {
-      router.replace("/(tabs)/home");
-    }
-  }, [user, segments, loading, router]);
-
-  return children;
+  return null;
 }
