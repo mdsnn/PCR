@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Provider } from "react-redux";
 import AuthProvider from "../components/AuthProvider";
+import "../global.css";
 import { store } from "../store/store";
 
 export default function RootLayout() {
