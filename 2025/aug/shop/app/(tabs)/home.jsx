@@ -2,7 +2,6 @@ import { Text, View } from "react-native";
 import { useSelector } from "react-redux";
 
 export default function Home() {
-  const { user } = useSelector((state) => state.auth);
 
   return (
     <View className="flex-1 bg-white px-6 justify-center items-center">
@@ -11,7 +10,6 @@ export default function Home() {
       </Text>
       <Text className="text-gray-600 text-center">
         Hello {user?.email}! You've successfully logged in.
-      </Text>
     </View>
   );
 }
