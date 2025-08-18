@@ -1,24 +1,29 @@
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { Provider } from "react-redux";
-import AuthProvider from "../components/AuthProvider";
+import { Stack, useRouter } from "expo-router";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useEffect } from "react";
 import "../global.css";
-import { store } from "../store/store";
 
 export default function RootLayout() {
+  const router = useRouter();
+  const auth = getAuth();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/home");
+      } else {
+        router.replace("/login");
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
-    <Provider store={store}>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
-      <AuthProvider />
-      <StatusBar style="auto" />
-    </Provider>
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="login" options={{ title: "Login" }} />
+      <Stack.Screen name="register" options={{ title: "Register" }} />
+      <Stack.Screen name="home" options={{ title: "Home" }} />
+    </Stack>
   );
 }
