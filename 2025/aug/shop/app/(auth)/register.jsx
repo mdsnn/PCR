@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
-  Platform,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
