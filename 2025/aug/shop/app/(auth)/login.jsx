@@ -4,7 +4,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -37,14 +36,18 @@ export default function Login() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+      className="flex-1 bg-gray-100"
     >
-      <View style={styles.formContainer}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Sign in to your account</Text>
+      <View className="flex-1 justify-center px-5">
+        <Text className="text-3xl font-bold text-center mb-2 text-gray-800">
+          Welcome Back
+        </Text>
+        <Text className="text-base text-center mb-8 text-gray-600">
+          Sign in to your account
+        </Text>
 
         <TextInput
-          style={styles.input}
+          className="bg-white px-4 py-4 rounded-xl mb-4 text-base border border-gray-300"
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
@@ -53,7 +56,7 @@ export default function Login() {
         />
 
         <TextInput
-          style={styles.input}
+          className="bg-white px-4 py-4 rounded-xl mb-4 text-base border border-gray-300"
           placeholder="Password"
           value={password}
           onChangeText={setPassword}
@@ -61,18 +64,20 @@ export default function Login() {
         />
 
         <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
+          className={`${
+            loading ? "bg-gray-400" : "bg-blue-500"
+          } py-4 rounded-xl mt-2`}
           onPress={handleLogin}
           disabled={loading}
         >
-          <Text style={styles.buttonText}>
+          <Text className="text-white text-center text-base font-semibold">
             {loading ? "Signing In..." : "Sign In"}
           </Text>
         </TouchableOpacity>
 
-        <View style={styles.linkContainer}>
-          <Text style={styles.linkText}>Don't have an account? </Text>
-          <Link href="/(auth)/register" style={styles.link}>
+        <View className="flex-row justify-center mt-6">
+          <Text className="text-gray-600">Don't have an account? </Text>
+          <Link href="/(auth)/register" className="text-blue-500 font-semibold">
             Sign up
           </Link>
         </View>
@@ -80,65 +85,3 @@ export default function Login() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  formContainer: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
-    color: "#333",
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 30,
-    color: "#666",
-  },
-  input: {
-    backgroundColor: "white",
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 15,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  buttonDisabled: {
-    backgroundColor: "#999",
-  },
-  buttonText: {
-    color: "white",
-    textAlign: "center",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  linkContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  linkText: {
-    color: "#666",
-  },
-  link: {
-    color: "#007AFF",
-    fontWeight: "600",
-  },
-});
