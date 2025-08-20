@@ -1,21 +1,22 @@
-import { router } from "expo-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { Link } from "expo-router";
 import { useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { auth } from "../../firebaseConfig";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -24,140 +25,120 @@ export default function Login() {
     }
 
     setLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.replace("/home");
-    } catch (error) {
-      Alert.alert("Login Error", error.message);
-    } finally {
-      setLoading(false);
+    const { error } = await signIn(email, password);
+
+    if (error) {
+      Alert.alert("Login Failed", error.message);
     }
+
+    setLoading(false);
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>Welcome Back</Text>
+        <Text style={styles.subtitle}>Sign in to your account</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleLogin}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Login</Text>
-        )}
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? "Signing In..." : "Sign In"}
+          </Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.linkButton}
-        onPress={() => router.push("/signup")}
-      >
-        <Text style={styles.linkText}>Don't have an account? Sign up</Text>
-      </TouchableOpacity>
-    </View>
+        <View style={styles.linkContainer}>
+          <Text style={styles.linkText}>Don't have an account? </Text>
+          <Link href="/(auth)/register" style={styles.link}>
+            Sign up
+          </Link>
+        </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
     backgroundColor: "#f5f5f5",
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 30,
+    textAlign: "center",
+    marginBottom: 10,
     color: "#333",
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 30,
+    color: "#666",
   },
   input: {
-    width: "100%",
-    height: 50,
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    fontSize: 16,
     borderWidth: 1,
     borderColor: "#ddd",
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    backgroundColor: "#fff",
-    fontSize: 16,
   },
   button: {
-    width: "100%",
-    height: 50,
     backgroundColor: "#007AFF",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  linkButton: {
+    paddingVertical: 15,
+    borderRadius: 10,
     marginTop: 10,
   },
-  linkText: {
-    color: "#007AFF",
+  buttonDisabled: {
+    backgroundColor: "#999",
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
     fontSize: 16,
+    fontWeight: "600",
   },
-  userInfo: {
-    width: "100%",
-    marginBottom: 40,
-  },
-  infoCard: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  label: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 5,
-  },
-  value: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "500",
-  },
-  logoutButton: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#FF3B30",
-    borderRadius: 8,
+  linkContainer: {
+    flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
+    marginTop: 20,
   },
-  logoutButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+  linkText: {
+    color: "#666",
+  },
+  link: {
+    color: "#007AFF",
+    fontWeight: "600",
   },
 });

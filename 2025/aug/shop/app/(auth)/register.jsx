@@ -4,6 +4,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   StyleSheet,
+  Platform,
   Text,
   TextInput,
   TouchableOpacity,
@@ -108,48 +109,60 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
-    padding: 20,
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
     color: "#333",
-    marginBottom: 30,
   },
-  card: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  label: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 5,
-    fontWeight: "500",
-  },
-  value: {
+  subtitle: {
     fontSize: 16,
-    color: "#333",
+    textAlign: "center",
+    marginBottom: 30,
+    color: "#666",
   },
-  signOutButton: {
-    backgroundColor: "#FF3B30",
+  input: {
+    backgroundColor: "white",
+    paddingHorizontal: 15,
     paddingVertical: 15,
     borderRadius: 10,
-    marginTop: 20,
+    marginBottom: 15,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
-  signOutText: {
+  button: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  buttonDisabled: {
+    backgroundColor: "#999",
+  },
+  buttonText: {
     color: "white",
     textAlign: "center",
     fontSize: 16,
+    fontWeight: "600",
+  },
+  linkContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  linkText: {
+    color: "#666",
+  },
+  link: {
+    color: "#007AFF",
     fontWeight: "600",
   },
 });
