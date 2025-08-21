@@ -28,6 +28,9 @@ export default function Login() {
 
     if (error) {
       Alert.alert("Login Failed", error.message);
+    } else {
+      // ✅ Navigate to Home screen after successful login
+      router.replace("/home");
     }
 
     setLoading(false);
