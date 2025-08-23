@@ -6,3 +6,4 @@ psycopg2-binary==2.9.9
 passlib[bcrypt]==1.7.4
 python-jose==3.3.0
 pydantic==2.8.2
+alembic==1.13.2
