@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .database import lifespan
-from .routes import users
+from .routes import users, products, orders
 
 app = FastAPI(
     title="User CRUD API",
@@ -11,6 +11,8 @@ app = FastAPI(
 
 # Routers
 app.include_router(users.router)
+app.include_router(products.router)
+app.include_router(orders.router)
 
 # Health check
 @app.get("/health")

@@ -46,3 +46,60 @@ class UserQueries:
     """
 
     COUNT_USERS = "SELECT COUNT(*) FROM users"
+
+
+class ProductQueries:
+    CREATE_TABLE = """
+        CREATE TABLE IF NOT EXISTS products (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            price NUMERIC(10, 2) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """
+
+    CREATE_PRODUCT = """
+        INSERT INTO products (name, price)
+        VALUES ($1, $2)
+        RETURNING id, name, price, created_at
+    """
+
+    GET_PRODUCT_BY_ID = "SELECT * FROM products WHERE id = $1"
+    GET_ALL_PRODUCTS = "SELECT * FROM products ORDER BY created_at DESC LIMIT $1 OFFSET $2"
+    DELETE_PRODUCT = "DELETE FROM products WHERE id = $1 RETURNING id"
+
+class OrderQueries:
+    CREATE_TABLE = """
+        CREATE TABLE IF NOT EXISTS orders (
+            id SERIAL PRIMARY KEY,
+            user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            product_id INT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+            quantity INT NOT NULL DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """
+
+    CREATE_ORDER = """
+        INSERT INTO orders (user_id, product_id, quantity)
+        VALUES ($1, $2, $3)
+        RETURNING id, user_id, product_id, quantity, created_at
+    """
+
+    GET_ORDER_BY_ID = """
+        SELECT o.id, o.user_id, u.name AS user_name,
+               o.product_id, p.name AS product_name, p.price,
+               o.quantity, o.created_at
+        FROM orders o
+        JOIN users u ON o.user_id = u.id
+        JOIN products p ON o.product_id = p.id
+        WHERE o.id = $1
+    """
+
+    GET_ALL_ORDERS = """
+        SELECT o.id, u.name AS user_name, p.name AS product_name, o.quantity, o.created_at
+        FROM orders o
+        JOIN users u ON o.user_id = u.id
+        JOIN products p ON o.product_id = p.id
+        ORDER BY o.created_at DESC
+        LIMIT $1 OFFSET $2
+    """

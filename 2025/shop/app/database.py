@@ -1,7 +1,7 @@
 import asyncpg
 from contextlib import asynccontextmanager
 from .config import DATABASE_URL
-from .queries import UserQueries
+from .queries import UserQueries, ProductQueries, OrderQueries
 
 db_pool = None
 
@@ -15,6 +15,8 @@ async def init_db():
 
     async with db_pool.acquire() as conn:
         await conn.execute(UserQueries.CREATE_TABLE)
+        await conn.execute(ProductQueries.CREATE_TABLE)
+        await conn.execute(OrderQueries.CREATE_TABLE)
 
 async def close_db():
     """Close DB pool"""
