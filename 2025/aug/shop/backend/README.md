@@ -1,1 +1,0 @@
-# FastAPI + JWT + Neon + Alembic
