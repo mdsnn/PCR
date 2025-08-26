@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "dev:debug": "nodemon --inspect index.js",
-    "migrate": "node-pg-migrate",
+    "migrate": "node-pg-migrate -f database.json -c dev",
     "migrate:up": "node-pg-migrate up",
     "migrate:down": "node-pg-migrate down"
   },
@@ -15,10 +15,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "connect-pg-simple": "^10.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "express-session": "^1.18.2",
     "pg": "^8.16.3",
+    "pg-connection-string": "^2.9.1",
     "yup": "^1.7.0"
   },
   "devDependencies": {

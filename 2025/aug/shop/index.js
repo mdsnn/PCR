@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
@@ -11,11 +12,7 @@ app.use(cors());
 
 // PostgreSQL connection
 const pool = new Pool({
-  user: process.env.DB_USER || "postgres",
-  host: process.env.DB_HOST || "localhost",
-  database: process.env.DB_NAME || "store",
-  password: process.env.DB_PASSWORD || "chama",
-  port: process.env.DB_PORT || 5432,
+  connectionString: process.env.DATABASE_URL,
 });
 
 // Test database connection
@@ -26,56 +23,6 @@ pool.connect((err, client, release) => {
   console.log("Connected to PostgreSQL database");
   release();
 });
-
-// Create students table (run this once)
-const createTable = async () => {
-  const query = `
-    CREATE TABLE IF NOT EXISTS students (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(100) NOT NULL,
-      email VARCHAR(100) UNIQUE NOT NULL,
-      age INTEGER NOT NULL CHECK (age > 0 AND age < 150),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
-
-  try {
-    await pool.query(query);
-    console.log("Students table created successfully");
-  } catch (err) {
-    console.error("Error creating table:", err);
-  }
-};
-
-// Initialize table
-createTable();
-
-// Validation middleware
-const validateStudent = (req, res, next) => {
-  const { name, email, age } = req.body;
-
-  if (!name || !email || !age) {
-    return res.status(400).json({
-      error: "All fields (name, email, age) are required",
-    });
-  }
-
-  if (typeof name !== "string" || name.trim().length === 0) {
-    return res.status(400).json({
-      error: "Name must be a non-empty string",
-    });
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({
-      error: "Invalid email format",
-    });
-  }
-
-  next();
-};
 
 // Routes
 
