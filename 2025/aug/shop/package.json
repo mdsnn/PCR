@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "dev:debug": "nodemon --inspect index.js",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "dev:debug": "nodemon --inspect app.js",
     "migrate": "node-pg-migrate -f database.json -c dev",
     "migrate:up": "node-pg-migrate up",
     "migrate:down": "node-pg-migrate down"
