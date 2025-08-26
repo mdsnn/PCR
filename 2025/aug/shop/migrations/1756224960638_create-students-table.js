@@ -1,18 +1,16 @@
-/**
- * @type {import('node-pg-migrate').ColumnDefinitions | undefined}
- */
-export const shorthands = undefined;
+/* eslint-disable camelcase */
 
-/**
- * @param pgm {import('node-pg-migrate').MigrationBuilder}
- * @param run {() => void | undefined}
- * @returns {Promise<void> | void}
- */
-export const up = (pgm) => {};
+exports.up = (pgm) => {
+  pgm.createTable("students", {
+    id: "id",
+    name: { type: "varchar(100)", notNull: true },
+    email: { type: "varchar(100)", notNull: true, unique: true },
+    age: { type: "integer", notNull: true, check: "age > 0 AND age < 150" },
+    created_at: { type: "timestamp", default: pgm.func("current_timestamp") },
+    updated_at: { type: "timestamp", default: pgm.func("current_timestamp") },
+  });
+};
 
-/**
- * @param pgm {import('node-pg-migrate').MigrationBuilder}
- * @param run {() => void | undefined}
- * @returns {Promise<void> | void}
- */
-export const down = (pgm) => {};
+exports.down = (pgm) => {
+  pgm.dropTable("students");
+};
