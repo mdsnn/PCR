@@ -1,0 +1,101 @@
+.student-list-container {
+  padding: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.student-list-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.add-student-btn {
+  display: inline-block;
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.add-student-btn:hover {
+  background-color: #2563eb;
+}
+
+.students-list {
+  margin-top: 1rem;
+  list-style: none;
+  padding: 0;
+}
+
+.student-item {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: white;
+}
+
+.student-info {
+  flex: 1;
+}
+
+.student-name-age {
+  margin: 0 0 0.25rem 0;
+  color: #374151;
+}
+
+.student-email {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.student-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.edit-btn {
+  background-color: #facc15;
+  color: #000;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.edit-btn:hover {
+  background-color: #eab308;
+}
+
+.delete-btn {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: #dc2626;
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
