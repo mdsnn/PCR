@@ -1,8 +1,6 @@
-require("dotenv").config();
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
-const yup = require("yup");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -13,11 +11,11 @@ app.use(cors());
 
 // PostgreSQL connection
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  user: process.env.DB_USER || "postgres",
+  host: process.env.DB_HOST || "localhost",
+  database: process.env.DB_NAME || "store",
+  password: process.env.DB_PASSWORD || "chama",
+  port: process.env.DB_PORT || 5432,
 });
 
 // Test database connection
@@ -53,54 +51,30 @@ const createTable = async () => {
 // Initialize table
 createTable();
 
-// Yup validation schemas
-const studentSchema = yup.object({
-  name: yup
-    .string()
-    .trim()
-    .min(1, "Name must not be empty")
-    .max(100, "Name must be less than 100 characters")
-    .required("Name is required"),
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .max(100, "Email must be less than 100 characters")
-    .required("Email is required"),
-  age: yup
-    .number()
-    .integer("Age must be an integer")
-    .min(1, "Age must be at least 1")
-    .max(149, "Age must be less than 150")
-    .required("Age is required"),
-});
+// Validation middleware
+const validateStudent = (req, res, next) => {
+  const { name, email, age } = req.body;
 
-const idSchema = yup.object({
-  id: yup
-    .number()
-    .integer("ID must be an integer")
-    .positive("ID must be a positive number")
-    .required("ID is required"),
-});
-
-// Validation middleware using Yup
-const validate = (schema) => async (req, res, next) => {
-  try {
-    await schema.validate(
-      {
-        body: req.body,
-        params: req.params,
-        query: req.query,
-      },
-      { abortEarly: false }
-    );
-    next();
-  } catch (error) {
+  if (!name || !email || !age) {
     return res.status(400).json({
-      success: false,
-      error: "Validation failed",
-      details: error.errors,
+      error: "All fields (name, email, age) are required",
     });
   }
+
+  if (typeof name !== "string" || name.trim().length === 0) {
+    return res.status(400).json({
+      error: "Name must be a non-empty string",
+    });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      error: "Invalid email format",
+    });
+  }
+
+  next();
 };
 
 // Routes
@@ -126,9 +100,16 @@ app.get("/api/students", async (req, res) => {
 });
 
 // GET student by ID
-app.get("/api/students/:id", validate(idSchema), async (req, res) => {
+app.get("/api/students/:id", async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!Number.isInteger(parseInt(id))) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid student ID",
+      });
+    }
 
     const result = await pool.query("SELECT * FROM students WHERE id = $1", [
       id,
@@ -155,7 +136,7 @@ app.get("/api/students/:id", validate(idSchema), async (req, res) => {
 });
 
 // POST create new student
-app.post("/api/students", validate(studentSchema), async (req, res) => {
+app.post("/api/students", validateStudent, async (req, res) => {
   try {
     const { name, email, age } = req.body;
 
@@ -187,58 +168,63 @@ app.post("/api/students", validate(studentSchema), async (req, res) => {
 });
 
 // PUT update student
-app.put(
-  "/api/students/:id",
-  validate(
-    yup.object({
-      params: idSchema,
-      body: studentSchema,
-    })
-  ),
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { name, email, age } = req.body;
-
-      const result = await pool.query(
-        "UPDATE students SET name = $1, email = $2, age = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING *",
-        [name.trim(), email.toLowerCase(), age, id]
-      );
-
-      if (result.rows.length === 0) {
-        return res.status(404).json({
-          success: false,
-          error: "Student not found",
-        });
-      }
-
-      res.json({
-        success: true,
-        message: "Student updated successfully",
-        data: result.rows[0],
-      });
-    } catch (err) {
-      console.error(err);
-
-      if (err.code === "23505") {
-        return res.status(409).json({
-          success: false,
-          error: "Email already exists",
-        });
-      }
-
-      res.status(500).json({
-        success: false,
-        error: "Server error while updating student",
-      });
-    }
-  }
-);
-
-// DELETE student
-app.delete("/api/students/:id", validate(idSchema), async (req, res) => {
+app.put("/api/students/:id", validateStudent, async (req, res) => {
   try {
     const { id } = req.params;
+    const { name, email, age } = req.body;
+
+    if (!Number.isInteger(parseInt(id))) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid student ID",
+      });
+    }
+
+    const result = await pool.query(
+      "UPDATE students SET name = $1, email = $2, age = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING *",
+      [name.trim(), email.toLowerCase(), age, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Student not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Student updated successfully",
+      data: result.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+
+    if (err.code === "23505") {
+      return res.status(409).json({
+        success: false,
+        error: "Email already exists",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: "Server error while updating student",
+    });
+  }
+});
+
+// DELETE student
+app.delete("/api/students/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!Number.isInteger(parseInt(id))) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid student ID",
+      });
+    }
 
     const result = await pool.query(
       "DELETE FROM students WHERE id = $1 RETURNING *",
