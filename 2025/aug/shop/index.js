@@ -159,7 +159,6 @@ app.post("/api/students", validateStudent, async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    // Handle unique constraint violation (duplicate email)
     if (err.code === "23505") {
       return res.status(409).json({
         success: false,
@@ -207,7 +206,6 @@ app.put("/api/students/:id", validateStudent, async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    // Handle unique constraint violation (duplicate email)
     if (err.code === "23505") {
       return res.status(409).json({
         success: false,
@@ -269,8 +267,8 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// 404 handler
-app.use("*", (req, res) => {
+// 404 handler (must be after all routes)
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     error: "Endpoint not found",
