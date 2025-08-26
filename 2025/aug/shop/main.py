@@ -9,7 +9,7 @@ from datetime import datetime
 from contextlib import asynccontextmanager
 
 # Database configuration
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://pstgres:chama@localhost:5432/fastapi")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:chama@localhost:5432/fastapi")
 
 # Database connection pool
 db_pool = None
