@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api";
+import "./StudentList.css"; // Import the CSS file
 
 export default function StudentList() {
   const [students, setStudents] = useState([]);
@@ -31,33 +32,30 @@ export default function StudentList() {
     fetchStudents();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p className="loading">Loading...</p>;
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">Students</h2>
-      <Link to="/add" className="bg-blue-500 text-white px-3 py-1 rounded">
+    <div className="student-list-container">
+      <h2 className="student-list-title">Students</h2>
+      <Link to="/add" className="add-student-btn">
         + Add Student
       </Link>
-      <ul className="mt-4">
+      <ul className="students-list">
         {students.map((student) => (
-          <li key={student.id} className="flex justify-between border p-2 mb-2">
-            <div>
-              <p>
+          <li key={student.id} className="student-item">
+            <div className="student-info">
+              <p className="student-name-age">
                 <strong>{student.name}</strong> ({student.age})
               </p>
-              <p>{student.email}</p>
+              <p className="student-email">{student.email}</p>
             </div>
-            <div className="space-x-2">
-              <Link
-                to={`/edit/${student.id}`}
-                className="bg-yellow-400 px-2 py-1 rounded"
-              >
+            <div className="student-actions">
+              <Link to={`/edit/${student.id}`} className="edit-btn">
                 Edit
               </Link>
               <button
                 onClick={() => deleteStudent(student.id)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
+                className="delete-btn"
               >
                 Delete
               </button>
