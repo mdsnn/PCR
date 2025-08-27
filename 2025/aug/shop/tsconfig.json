@@ -118,8 +118,5 @@
         "resources/js/**/*.ts",
         "resources/js/**/*.d.ts",
         "resources/js/**/*.tsx",
-        "resources/js/ssr.jsx",
-        "resources/js/app.jsx",
-        "resources/js/pages/welcome.jsx"
     ]
 }
