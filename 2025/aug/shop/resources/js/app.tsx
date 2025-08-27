@@ -1,8 +1,11 @@
 import '../css/app.css';
+import './bootstrap'; // Add this if you need the bootstrap import
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import SplashScreen from './Components/SplashScreen'; // Import your splash screen component
 
 const appName = import.meta.env.VITE_APP_NAME || 'POTBELLY';
 
@@ -12,7 +15,18 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<App {...props} />);
+        const MainApp = () => {
+            const [splashDone, setSplashDone] = useState(false);
+
+            return (
+                <>
+                    {!splashDone && <SplashScreen onComplete={() => setSplashDone(true)} />}
+                    {splashDone && <App {...props} />}
+                </>
+            );
+        };
+
+        root.render(<MainApp />);
     },
     progress: {
         color: '#4B5563',

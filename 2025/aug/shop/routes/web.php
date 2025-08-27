@@ -21,12 +21,17 @@ Route::middleware('guest')->group(function () {
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/', function () {
+        return Inertia::render('Home', [
+            'user' => auth()->user(),
+        ]);
+    })->name('home');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
     // Todo routes (should also be protected)
     Route::get('/todos', [TodoController::class, 'index'])->name('todos.index');
     Route::post('/todos', [TodoController::class, 'store'])->name('todos.store');
+    Route::put('/todos/{todo}', [TodoController::class, 'update'])->name('todos.update');
     Route::patch('/todos/{todo}/toggle', [TodoController::class, 'toggle'])->name('todos.toggle');
     Route::delete('/todos/{todo}', [TodoController::class, 'destroy'])->name('todos.destroy');
 });
