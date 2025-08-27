@@ -5,7 +5,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import SplashScreen from './Components/SplashScreen'; // Import your splash screen component
+import SplashScreen from './components/SplashScreen'; // Import your splash screen component
 
 const appName = import.meta.env.VITE_APP_NAME || 'POTBELLY';
 
