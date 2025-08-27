@@ -1,5 +1,4 @@
 import '../css/app.css';
-import './bootstrap'; // Add this if you need the bootstrap import
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
