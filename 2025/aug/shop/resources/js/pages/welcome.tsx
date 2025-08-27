@@ -1,9 +1,15 @@
+import { Link } from '@inertiajs/react';
+
 export default function Welcome() {
     return (
-        <>
-            <h3 className="mb-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 p-4 text-2xl font-bold text-gray-800 shadow-md transition-shadow duration-300 hover:shadow-lg">
-                what about you?
-            </h3>
-        </>
+        <div className="p-6 text-center">
+            <h2 className="mb-4 text-2xl font-bold">Welcome Page 👋</h2>
+            <p className="mb-6">This is your landing page.</p>
+
+            {/* Link to Todos */}
+            <Link href={route('todos.index')} className="rounded bg-blue-500 px-4 py-2 text-white shadow">
+                Go to Todos
+            </Link>
+        </div>
     );
 }
