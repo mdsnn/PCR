@@ -40,3 +40,6 @@ Route::middleware('auth')->group(function () {
 Route::get('/test', function () {
     return Inertia::render('test'); // this will look for resources/js/pages/Test.jsx
 })->name('test');
+Route::get('/map', function () {
+    return Inertia::render('MapPage');
+})->name('map');
