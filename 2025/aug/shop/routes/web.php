@@ -43,3 +43,6 @@ Route::get('/test', function () {
 Route::get('/map', function () {
     return Inertia::render('MapPage');
 })->name('map');
+Route::get('/homepage', function () {
+    return Inertia::render('HomePage');
+})->name('map');
