@@ -165,59 +165,41 @@ export default function Home({ user, todos = [] }) {
                         </h2>
                     </div>
 
-                    {todos.length === 0 ? (
-                        <div className="p-8 text-center">
-                            <div className="mb-4 text-gray-400">
-                                <Plus className="mx-auto h-16 w-16" />
-                            </div>
-                            <h3 className="mb-2 text-lg font-medium text-gray-900">No todos yet</h3>
-                            <p className="mb-4 text-gray-600">Start by creating your first todo above!</p>
-                        </div>
-                    ) : (
-                        <div className="divide-y divide-gray-200">
-                            {todos.map((todo) => (
-                                <div key={todo.id} className="p-6 transition-colors hover:bg-gray-50">
-                                    <div className="flex items-start gap-4">
-                                        <button
-                                            onClick={() => handleToggle(todo)}
-                                            className={`mt-1 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors ${
-                                                todo.completed ? 'border-green-600 bg-green-600 text-white' : 'border-gray-300 hover:border-green-500'
-                                            }`}
-                                        >
-                                            {todo.completed && <Check className="h-4 w-4" />}
+                    <div className="divide-y divide-gray-200">
+                        {todos.map((todo) => (
+                            <div key={todo.id} className="p-6 transition-colors hover:bg-gray-50">
+                                <div className="flex items-start gap-4">
+                                    <button
+                                        onClick={() => handleToggle(todo)}
+                                        className={`mt-1 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors ${
+                                            todo.completed ? 'border-green-600 bg-green-600 text-white' : 'border-gray-300 hover:border-green-500'
+                                        }`}
+                                    >
+                                        {todo.completed && <Check className="h-4 w-4" />}
+                                    </button>
+
+                                    <div className="min-w-0 flex-1">
+                                        <h3 className={`font-medium ${todo.completed ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                                            {todo.title}
+                                        </h3>
+                                        {todo.description && (
+                                            <p className={`mt-1 text-sm ${todo.completed ? 'text-gray-400' : 'text-gray-600'}`}>{todo.description}</p>
+                                        )}
+                                        <p className="mt-2 text-xs text-gray-400">Created {formatDate(todo.created_at)}</p>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={() => handleEdit(todo)} className="p-2 text-gray-400 transition-colors hover:text-blue-600">
+                                            <Edit2 className="h-4 w-4" />
                                         </button>
-
-                                        <div className="min-w-0 flex-1">
-                                            <h3 className={`font-medium ${todo.completed ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
-                                                {todo.title}
-                                            </h3>
-                                            {todo.description && (
-                                                <p className={`mt-1 text-sm ${todo.completed ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                    {todo.description}
-                                                </p>
-                                            )}
-                                            <p className="mt-2 text-xs text-gray-400">Created {formatDate(todo.created_at)}</p>
-                                        </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => handleEdit(todo)}
-                                                className="p-2 text-gray-400 transition-colors hover:text-blue-600"
-                                            >
-                                                <Edit2 className="h-4 w-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(todo)}
-                                                className="p-2 text-gray-400 transition-colors hover:text-red-600"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
-                                        </div>
+                                        <button onClick={() => handleDelete(todo)} className="p-2 text-gray-400 transition-colors hover:text-red-600">
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {todos.length > 0 && (
