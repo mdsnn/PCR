@@ -52,3 +52,6 @@ Route::get('/reset', function () {
 Route::get('/forgot', function () {
     return Inertia::render('Auth/ForgotPassword');
 })->name('forgot');
+Route::get('/cart', function () {
+    return Inertia::render('CartPage');
+})->name('cart');
