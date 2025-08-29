@@ -1,4 +1,18 @@
-import { Bell, Hash, Heart, Home, MessageCircle, MessageSquare, MoreHorizontal, Plus, Search, Share, User, UserPlus } from 'lucide-react';
+import {
+    Bell,
+    Heart,
+    Home,
+    Map,
+    MessageCircle,
+    MessageSquare,
+    MoreHorizontal,
+    Plus,
+    Search,
+    Share,
+    ShoppingCart,
+    User,
+    UserPlus,
+} from 'lucide-react';
 
 const HomePage = () => {
     return (
@@ -55,7 +69,7 @@ const HomePage = () => {
                                     href="#"
                                     className="flex items-center space-x-3 rounded-full px-4 py-3 text-lg text-gray-700 transition-all duration-200 hover:bg-green-50 hover:text-green-600"
                                 >
-                                    <Hash className="h-6 w-6" />
+                                    <Map className="h-6 w-6" />
                                     <span>MapView</span>
                                 </a>
                             </li>
@@ -64,7 +78,7 @@ const HomePage = () => {
                                     href="#"
                                     className="flex items-center space-x-3 rounded-full px-4 py-3 text-lg text-gray-700 transition-all duration-200 hover:bg-green-50 hover:text-green-600"
                                 >
-                                    <Bell className="h-6 w-6" />
+                                    <ShoppingCart className="h-6 w-6" />
                                     <span>Cart</span>
                                 </a>
                             </li>
@@ -299,8 +313,8 @@ const HomePage = () => {
                     <span className="mt-1 text-xs">Explore</span>
                 </a>
                 <a href="#" className="relative flex flex-col items-center p-2 text-gray-500 transition-colors hover:text-green-600">
-                    <Bell className="h-5 w-5" />
-                    <span className="mt-1 text-xs">MapView</span>
+                    <ShoppingCart className="h-5 w-5" />
+                    <span className="mt-1 text-xs">Cart</span>
                     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                         3
                     </span>
@@ -310,8 +324,8 @@ const HomePage = () => {
                     <span className="mt-1 text-xs">Messages</span>
                 </a>
                 <a href="#" className="flex flex-col items-center p-2 text-gray-500 transition-colors hover:text-green-600">
-                    <User className="h-5 w-5" />
-                    <span className="mt-1 text-xs">Cart</span>
+                    <Map className="h-5 w-5" />
+                    <span className="mt-1 text-xs">MapView</span>
                 </a>
             </nav>
 
