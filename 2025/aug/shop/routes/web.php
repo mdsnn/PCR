@@ -46,3 +46,9 @@ Route::get('/map', function () {
 Route::get('/homepage', function () {
     return Inertia::render('HomePage');
 })->name('map');
+Route::get('/reset', function () {
+    return Inertia::render('Auth/ResetPassword');
+})->name('reset');
+Route::get('/forgot', function () {
+    return Inertia::render('Auth/ForgotPassword');
+})->name('forgot');
