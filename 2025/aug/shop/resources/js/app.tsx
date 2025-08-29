@@ -3,9 +3,19 @@ import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import L from 'leaflet';
+import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import SplashScreen from './components/SplashScreen'; // Import your splash screen component
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: iconRetina,
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+});
 
 const appName = import.meta.env.VITE_APP_NAME || 'POTBELLY';
 

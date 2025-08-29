@@ -103,6 +103,13 @@ export default function Login({ errors, flash }: AuthPageProps) {
                                 {errors.password && <p className="mt-1 text-sm text-red-300">{errors.password}</p>}
                             </div>
 
+                            {/* Forgot password */}
+                            <div className="text-right">
+                                <Link href="/forgot-password" className="text-sm text-green-200 hover:text-white">
+                                    Forgot your password?
+                                </Link>
+                            </div>
+
                             {/* Remember me */}
                             <div className="flex items-center space-x-2">
                                 <input
