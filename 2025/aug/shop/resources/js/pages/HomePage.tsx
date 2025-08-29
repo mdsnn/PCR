@@ -1,4 +1,4 @@
-import { Bell, Hash, Heart, Home, MessageCircle, MessageSquare, MoreHorizontal, Plus, Search, Share, TrendingUp, User, UserPlus } from 'lucide-react';
+import { Bell, Hash, Heart, Home, MessageCircle, MessageSquare, MoreHorizontal, Plus, Search, Share, User, UserPlus } from 'lucide-react';
 
 const HomePage = () => {
     return (
@@ -7,9 +7,6 @@ const HomePage = () => {
             <header className="sticky top-0 z-10 border-b border-gray-200/60 bg-white/90 px-4 py-3 shadow-sm backdrop-blur-md">
                 <div className="mx-auto flex max-w-7xl items-center justify-between">
                     <div className="flex items-center space-x-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-400 to-green-600">
-                            <span className="text-sm font-bold text-white">P</span>
-                        </div>
                         <h1 className="bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-2xl font-bold text-transparent">POTBELLY</h1>
                     </div>
 
@@ -101,28 +98,6 @@ const HomePage = () => {
                 {/* Main Content Column */}
                 <main className="flex-1 p-4 lg:border-r lg:border-gray-200/60">
                     {/* Create Post */}
-                    <div className="mb-6 rounded-xl border border-gray-200/60 bg-white/80 p-4 shadow-sm backdrop-blur-sm">
-                        <div className="flex items-center space-x-3">
-                            <div className="h-12 w-12 rounded-full bg-gradient-to-r from-green-400 to-green-600"></div>
-                            <div className="flex-1">
-                                <input
-                                    type="text"
-                                    placeholder="What's happening?"
-                                    className="w-full border-none bg-transparent text-xl placeholder-gray-500 focus:outline-none"
-                                />
-                            </div>
-                        </div>
-                        <div className="mt-4 flex items-center justify-between">
-                            <div className="flex items-center space-x-4 text-green-500">
-                                <button className="rounded-full p-2 transition-colors hover:bg-green-50">
-                                    <Plus className="h-5 w-5" />
-                                </button>
-                            </div>
-                            <button className="rounded-full bg-green-500 px-6 py-2 font-semibold text-white transition-all duration-200 hover:bg-green-600 disabled:opacity-50">
-                                Post
-                            </button>
-                        </div>
-                    </div>
 
                     {/* Posts Feed */}
                     <div className="space-y-4">
@@ -263,32 +238,6 @@ const HomePage = () => {
                 {/* Right Sidebar */}
                 <aside className="hidden w-80 p-4 lg:block">
                     <div className="sticky top-20 space-y-6">
-                        {/* Trending Section */}
-                        <div className="rounded-xl border border-gray-200/60 bg-white/80 p-4 shadow-sm backdrop-blur-sm">
-                            <div className="mb-4 flex items-center space-x-2">
-                                <TrendingUp className="h-5 w-5 text-green-500" />
-                                <h3 className="text-lg font-semibold text-gray-900">Trending</h3>
-                            </div>
-                            <ul className="space-y-3">
-                                <li className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-gray-50">
-                                    <div className="text-sm text-gray-500">#1 Trending</div>
-                                    <div className="font-semibold text-gray-900">#SustainableLiving</div>
-                                    <div className="text-sm text-gray-500">12.4K posts</div>
-                                </li>
-                                <li className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-gray-50">
-                                    <div className="text-sm text-gray-500">#2 Trending</div>
-                                    <div className="font-semibold text-gray-900">#TechInnovation</div>
-                                    <div className="text-sm text-gray-500">8.7K posts</div>
-                                </li>
-                                <li className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-gray-50">
-                                    <div className="text-sm text-gray-500">#3 Trending</div>
-                                    <div className="font-semibold text-gray-900">#CommunityGarden</div>
-                                    <div className="text-sm text-gray-500">5.2K posts</div>
-                                </li>
-                            </ul>
-                            <button className="mt-3 text-sm font-medium text-green-600 hover:text-green-700">Show more</button>
-                        </div>
-
                         {/* Who to Follow */}
                         <div className="rounded-xl border border-gray-200/60 bg-white/80 p-4 shadow-sm backdrop-blur-sm">
                             <div className="mb-4 flex items-center space-x-2">
@@ -351,7 +300,7 @@ const HomePage = () => {
                 </a>
                 <a href="#" className="relative flex flex-col items-center p-2 text-gray-500 transition-colors hover:text-green-600">
                     <Bell className="h-5 w-5" />
-                    <span className="mt-1 text-xs">Alerts</span>
+                    <span className="mt-1 text-xs">MapView</span>
                     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                         3
                     </span>
@@ -362,7 +311,7 @@ const HomePage = () => {
                 </a>
                 <a href="#" className="flex flex-col items-center p-2 text-gray-500 transition-colors hover:text-green-600">
                     <User className="h-5 w-5" />
-                    <span className="mt-1 text-xs">Profile</span>
+                    <span className="mt-1 text-xs">Cart</span>
                 </a>
             </nav>
 
