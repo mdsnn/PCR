@@ -55,3 +55,9 @@ Route::get('/forgot', function () {
 Route::get('/cart', function () {
     return Inertia::render('CartPage');
 })->name('cart');
+Route::get('/chat', function () {
+    return Inertia::render('ChatPage');
+})->name('chat');
+Route::get('/profile', function () {
+    return Inertia::render('ProfilePage');
+})->name('profile');

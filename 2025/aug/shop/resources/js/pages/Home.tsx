@@ -393,28 +393,28 @@ const Home = () => {
                 <aside className="hidden w-64 p-4 lg:block">
                     <nav className="sticky top-20 space-y-3">
                         <Link
-                            href="#"
+                            href="/"
                             className="flex items-center space-x-3 rounded-xl bg-green-500 px-4 py-3 text-lg font-medium text-white transition-all hover:bg-green-600"
                         >
                             <HomeIcon className="h-6 w-6" />
                             <span>Home</span>
                         </Link>
                         <Link
-                            href="#"
+                            href="/map"
                             className="flex items-center space-x-3 rounded-xl px-4 py-3 text-lg text-gray-700 transition-all hover:bg-green-50 hover:text-green-600"
                         >
                             <Map className="h-6 w-6" />
                             <span>Mapview</span>
                         </Link>
                         <Link
-                            href="#"
+                            href="/cart"
                             className="flex items-center space-x-3 rounded-xl px-4 py-3 text-lg text-gray-700 transition-all hover:bg-green-50 hover:text-green-600"
                         >
                             <ShoppingCart className="h-6 w-6" />
                             <span>Cart</span>
                         </Link>
                         <Link
-                            href="#"
+                            href="/chat"
                             className="flex items-center space-x-3 rounded-xl px-4 py-3 text-lg text-gray-700 transition-all hover:bg-green-50 hover:text-green-600"
                         >
                             <MessageCircle className="h-6 w-6" />
