@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import {
     Bell,
     Calendar,
@@ -17,7 +18,6 @@ import {
     Store,
     User,
 } from 'lucide-react';
-
 // Feed Card Components (from your feed design)
 const FeedCard = ({ children, className = '' }) => (
     <div className={`rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-sm backdrop-blur-sm transition-shadow hover:shadow-md ${className}`}>
@@ -343,7 +343,7 @@ const UserRecipeVideoCard = () => (
     </FeedCard>
 );
 
-const HomePage = () => {
+const Home = () => {
     // Array of feed cards to display
     const feedCards = [
         <StoreProductCard key="product" />,
@@ -392,34 +392,34 @@ const HomePage = () => {
                 {/* Left Sidebar */}
                 <aside className="hidden w-64 p-4 lg:block">
                     <nav className="sticky top-20 space-y-3">
-                        <a
+                        <Link
                             href="#"
                             className="flex items-center space-x-3 rounded-xl bg-green-500 px-4 py-3 text-lg font-medium text-white transition-all hover:bg-green-600"
                         >
                             <Home className="h-6 w-6" />
                             <span>Home</span>
-                        </a>
-                        <a
+                        </Link>
+                        <Link
                             href="#"
                             className="flex items-center space-x-3 rounded-xl px-4 py-3 text-lg text-gray-700 transition-all hover:bg-green-50 hover:text-green-600"
                         >
                             <Map className="h-6 w-6" />
                             <span>Mapview</span>
-                        </a>
-                        <a
+                        </Link>
+                        <Link
                             href="#"
                             className="flex items-center space-x-3 rounded-xl px-4 py-3 text-lg text-gray-700 transition-all hover:bg-green-50 hover:text-green-600"
                         >
                             <ShoppingCart className="h-6 w-6" />
                             <span>Cart</span>
-                        </a>
-                        <a
+                        </Link>
+                        <Link
                             href="#"
                             className="flex items-center space-x-3 rounded-xl px-4 py-3 text-lg text-gray-700 transition-all hover:bg-green-50 hover:text-green-600"
                         >
                             <MessageCircle className="h-6 w-6" />
                             <span>Chats</span>
-                        </a>
+                        </Link>
                         <button className="mt-6 w-full rounded-xl bg-green-500 py-3 font-semibold text-white shadow-md transition-all hover:scale-105 hover:bg-green-600">
                             Post
                         </button>
@@ -463,26 +463,26 @@ const HomePage = () => {
 
             {/* Mobile Bottom Nav */}
             <nav className="fixed right-0 bottom-0 left-0 z-10 flex justify-around border-t border-gray-200/60 bg-white/90 py-2 shadow-lg backdrop-blur-md lg:hidden">
-                <a href="#" className="flex flex-col items-center p-2 text-green-600">
+                <Link href="#" className="flex flex-col items-center p-2 text-green-600">
                     <Home className="h-5 w-5" />
                     <span className="mt-1 text-xs font-medium">Home</span>
-                </a>
-                <a href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
+                </Link>
+                <Link href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
                     <Search className="h-5 w-5" />
                     <span className="mt-1 text-xs">Discover</span>
-                </a>
-                <a href="#" className="relative flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
+                </Link>
+                <Link href="#" className="relative flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
                     <ShoppingCart className="h-5 w-5" />
                     <span className="mt-1 text-xs">Cart</span>
-                </a>
-                <a href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
+                </Link>
+                <Link href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
                     <MessageCircle className="h-5 w-5" />
                     <span className="mt-1 text-xs">Chats</span>
-                </a>
-                <a href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
+                </Link>
+                <Link href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
                     <Map className="h-5 w-5" />
                     <span className="mt-1 text-xs">MapView</span>
-                </a>
+                </Link>
             </nav>
 
             {/* Floating Post Button (Mobile) */}
@@ -493,4 +493,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default Home;
