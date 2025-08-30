@@ -5,7 +5,7 @@ import {
     CheckCircle,
     Clock,
     Heart,
-    Home,
+    Home as HomeIcon,
     Map,
     MapPin,
     MessageCircle,
@@ -396,7 +396,7 @@ const Home = () => {
                             href="#"
                             className="flex items-center space-x-3 rounded-xl bg-green-500 px-4 py-3 text-lg font-medium text-white transition-all hover:bg-green-600"
                         >
-                            <Home className="h-6 w-6" />
+                            <HomeIcon className="h-6 w-6" />
                             <span>Home</span>
                         </Link>
                         <Link
@@ -463,23 +463,23 @@ const Home = () => {
 
             {/* Mobile Bottom Nav */}
             <nav className="fixed right-0 bottom-0 left-0 z-10 flex justify-around border-t border-gray-200/60 bg-white/90 py-2 shadow-lg backdrop-blur-md lg:hidden">
-                <Link href="#" className="flex flex-col items-center p-2 text-green-600">
-                    <Home className="h-5 w-5" />
+                <Link href="/" className="flex flex-col items-center p-2 text-green-600">
+                    <HomeIcon className="h-5 w-5" />
                     <span className="mt-1 text-xs font-medium">Home</span>
                 </Link>
-                <Link href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
+                <Link href="/search" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
                     <Search className="h-5 w-5" />
                     <span className="mt-1 text-xs">Discover</span>
                 </Link>
-                <Link href="#" className="relative flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
+                <Link href="/cart" className="relative flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
                     <ShoppingCart className="h-5 w-5" />
                     <span className="mt-1 text-xs">Cart</span>
                 </Link>
-                <Link href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
+                <Link href="/chats" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
                     <MessageCircle className="h-5 w-5" />
                     <span className="mt-1 text-xs">Chats</span>
                 </Link>
-                <Link href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
+                <Link href="/map" className="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
                     <Map className="h-5 w-5" />
                     <span className="mt-1 text-xs">MapView</span>
                 </Link>
