@@ -68,3 +68,5 @@ Route::get('/chat', function () {
 Route::get('/profiles', function () {
     return Inertia::render('ProfilePage');
 })->name('profiles');
+
+Route::get('/u/{username}', [ProfileController::class, 'public'])->name('profile.public');
