@@ -52,4 +52,15 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.show')->with('message', 'Profile updated successfully!');
     }
+
+    public function public($username)
+    {
+    $profile = Profile::where('username', $username)
+        ->with('user:id,name')
+        ->firstOrFail();
+
+    return Inertia::render('Profile/Public', [
+        'profile' => $profile,
+    ]);
+    }
 }
