@@ -144,8 +144,8 @@ const ProfilePage = () => {
                                     <div className="text-sm text-gray-600">Followers</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-2xl font-bold text-green-600">4.8</div>
-                                    <div className="text-sm text-gray-600">Rating</div>
+                                    <div className="text-2xl font-bold text-green-600">view(last 72h)</div>
+                                    <div className="text-sm text-gray-600">109</div>
                                 </div>
                             </div>
                         </div>
@@ -213,7 +213,7 @@ const ProfilePage = () => {
                                             <span className="text-sm text-gray-500">1d</span>
                                         </div>
                                         <p className="mt-2 leading-relaxed text-gray-800">
-                                            Just tried the most amazing fresh bread from{' '}
+                                            Just tried the most amazing fresh bread from
                                             <span className="font-medium text-orange-600">Anna's Food Truck</span>! 🍞 The quality and taste are
                                             unmatched. Highly recommend supporting this local business!
                                         </p>
