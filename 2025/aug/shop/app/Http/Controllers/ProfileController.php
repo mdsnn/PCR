@@ -56,6 +56,7 @@ class ProfileController extends Controller
     public function public($username)
     {
     $profile = Profile::where('username', $username)
+        ->orWhereHas('user', fn($q) => $q->where('id', $username))    
         ->with('user:id,name')
         ->firstOrFail();
 
