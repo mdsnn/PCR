@@ -9,12 +9,24 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 
 
+use App\Http\Controllers\MagicLinkController;
+
+// Public routes
+
+// Protected routes
+Route::middleware('auth')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    
+});
+
+
+
 // Guest routes (unauthenticated users)
 Route::middleware('guest')->group(function () {
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/login', [MagicLinkController::class, 'showLogin'])->name('login');
+    Route::post('/magic-link', [MagicLinkController::class, 'sendMagicLink'])->name('magic-link.send');
+Route::get('/magic-link/verify/{token}', [MagicLinkController::class, 'verify'])->name('magic-link.verify');
+
     
     // Redirect root to login for guests
     Route::get('/', function () {
@@ -29,7 +41,7 @@ Route::middleware('auth')->group(function () {
             'user' => auth()->user(),
         ]);
     })->name('home');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [MagicLinkController::class, 'logout'])->name('logout');
     
     // Todo routes (should also be protected)
     Route::get('/todos', [TodoController::class, 'index'])->name('todos.index');
