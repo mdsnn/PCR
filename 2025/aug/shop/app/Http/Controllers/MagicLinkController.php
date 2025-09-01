@@ -1,54 +1,85 @@
-// app/Http/Controllers/MagicLinkController.php
+<?php
+
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Models\MagicLink;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 class MagicLinkController extends Controller
 {
-    public function send(Request $request)
+    public function showLogin()
     {
-        $request->validate(['email' => 'required|email']);
-
-        $token = Str::random(64);
-        $expiresAt = Carbon::now()->addMinutes(15);
-
-        DB::table('login_tokens')->insert([
-            'email' => $request->email,
-            'token' => $token,
-            'expires_at' => $expiresAt,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $link = url("/magic-login/{$token}");
-
-        Mail::raw("Click to login: {$link}", function ($message) use ($request) {
-            $message->to($request->email)->subject('Your magic login link');
-        });
-
-        return back()->with('status', 'We sent you a magic link!');
+        return Inertia::render('Auth/Login');
     }
 
-    public function login($token)
+    public function sendMagicLink(Request $request)
     {
-        $record = DB::table('login_tokens')->where('token', $token)->first();
+        $request->validate([
+            'email' => 'required|email',
+        ]);
 
-        if (! $record || Carbon::parse($record->expires_at)->isPast()) {
-            return redirect('/login')->withErrors(['email' => 'Link expired or invalid']);
+        $email = $request->email;
+
+        // Create or find user
+        $user = User::firstOrCreate(
+            ['email' => $email],
+            ['name' => explode('@', $email)[0]] // Simple name from email
+        );
+
+        // Generate magic link
+        $magicLink = MagicLink::generateForEmail($email);
+
+        // Send email
+        Mail::send('emails.magic-link', [
+            'url' => route('magic-link.verify', ['token' => $magicLink->token])
+        ], function ($message) use ($email) {
+            $message->to($email)
+                   ->subject('Your Magic Login Link');
+        });
+
+        return back()->with('success', 'Magic link sent to your email!');
+    }
+
+    public function verify($token)
+    {
+        $magicLink = MagicLink::where('token', $token)->first();
+
+        if (!$magicLink || !$magicLink->isValid()) {
+            throw ValidationException::withMessages([
+                'token' => ['This magic link is invalid or has expired.'],
+            ]);
         }
 
-        $user = User::firstOrCreate(['email' => $record->email]);
+        // Find user and log them in
+        $user = User::where('email', $magicLink->email)->first();
+        
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'token' => ['User not found.'],
+            ]);
+        }
 
-        Auth::login($user);
+        // Mark magic link as used
+        $magicLink->markAsUsed();
 
-        DB::table('login_tokens')->where('id', $record->id)->delete();
+        // Log the user in
+        Auth::login($user, true); // Remember the user
 
-        return redirect('/dashboard');
+        return redirect()->route('home');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
     }
 }
