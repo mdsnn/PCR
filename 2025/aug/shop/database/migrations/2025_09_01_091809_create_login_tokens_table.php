@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('login_tokens', function (Blueprint $table) {
             $table->id();
+            $table->string('email');
+            $table->string('token')->unique();
+            $table->timestamp('expires_at');
             $table->timestamps();
         });
     }

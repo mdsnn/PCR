@@ -19,6 +19,8 @@ Route::middleware('auth')->group(function () {
     
 });
 
+Route::post('/magic-login', [MagicLinkController::class, 'send'])->name('magic.send');
+Route::get('/magic-login/{token}', [MagicLinkController::class, 'login'])->name('magic.login');
 
 
 // Guest routes (unauthenticated users)
