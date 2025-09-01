@@ -7,19 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MagicLinkController;
 
-/*
-|--------------------------------------------------------------------------
-| Public Routes
-|--------------------------------------------------------------------------
-*/
 
-/*
-|--------------------------------------------------------------------------
-| Guest Routes (unauthenticated users only)
-|--------------------------------------------------------------------------
-*/
-
-// Protected routes
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [MagicLinkController::class, 'showLogin'])->name('login');
