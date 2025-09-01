@@ -86,19 +86,6 @@ export default function Login({ flash }) {
                                 )}
                             </button>
                         </form>
-
-                        {/* Info */}
-                        <div className="mt-8 border-t border-gray-200 pt-6">
-                            <div className="text-center">
-                                <p className="text-sm text-gray-500">🛡️ Secure, passwordless authentication</p>
-                                <p className="mt-1 text-xs text-gray-400">Magic links expire in 15 minutes</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="text-center">
-                        <p className="text-sm text-gray-500">New here? No worries! Just enter your email to get started.</p>
                     </div>
                 </div>
             </div>
