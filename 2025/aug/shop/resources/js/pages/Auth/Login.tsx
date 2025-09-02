@@ -1,93 +1,92 @@
+// resources/js/Pages/Auth/Login.tsx
 import { Head, useForm } from '@inertiajs/react';
+import { motion } from 'framer-motion';
+import { FormEvent } from 'react';
 
 export default function Login({ flash }) {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
     });
 
-    const submit = (e) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         post(route('magic-link.send'));
     };
+
+    // Floating circles data
+    const circles = [
+        { size: 200, top: '20%', left: '10%', delay: 0 },
+        { size: 300, top: '60%', right: '15%', delay: 2 },
+        { size: 150, bottom: '15%', left: '25%', delay: 4 },
+    ];
 
     return (
         <>
             <Head title="Login" />
 
-            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-                <div className="w-full max-w-md space-y-8 p-8">
-                    <div className="rounded-2xl bg-white p-8 shadow-xl">
-                        {/* Header */}
-                        <div className="mb-8 text-center">
-                            <div className="mb-4 text-4xl">✨</div>
-                            <h2 className="mb-2 text-3xl font-bold text-gray-900">Welcome Back</h2>
-                            <p className="text-gray-600">Enter your email to receive a magic login link</p>
-                        </div>
+            {/* Background gradient */}
+            <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-green-500 to-green-700 px-4 py-12 sm:px-6 lg:px-8">
+                {/* Floating circles */}
+                {circles.map((c, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute rounded-full bg-white/10 backdrop-blur-xl"
+                        style={{
+                            width: c.size,
+                            height: c.size,
+                            top: c.top,
+                            left: c.left,
+                            right: c.right,
+                            bottom: c.bottom,
+                        }}
+                        animate={{ y: [0, -30, 0], scale: [1, 1.05, 1], opacity: [0.6, 1, 0.6] }}
+                        transition={{ duration: 6, repeat: Infinity, delay: c.delay }}
+                    />
+                ))}
+
+                {/* Card */}
+                <motion.div
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8 }}
+                    className="relative z-10 w-full max-w-md"
+                >
+                    <div className="rounded-2xl bg-white/20 p-8 shadow-2xl backdrop-blur-lg">
+                        <h2 className="mb-6 text-center text-3xl font-extrabold text-white">POTBELLY ERA</h2>
 
                         {/* Success Message */}
                         {flash?.success && (
-                            <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4">
-                                <div className="flex items-center">
-                                    <div className="mr-3 text-green-500">📧</div>
-                                    <div>
-                                        <p className="font-medium text-green-800">{flash.success}</p>
-                                        <p className="mt-1 text-sm text-green-700">Check your inbox and click the link to login</p>
-                                    </div>
-                                </div>
-                            </div>
+                            <div className="mb-4 rounded-lg border border-green-400 bg-green-100 px-4 py-3 text-green-700">{flash.success}</div>
                         )}
 
-                        {/* Login Form */}
-                        <form onSubmit={submit} className="space-y-6">
+                        <form className="space-y-5" onSubmit={handleSubmit}>
+                            {/* Email */}
                             <div>
-                                <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
-                                    Email Address
-                                </label>
                                 <input
                                     id="email"
                                     name="email"
                                     type="email"
+                                    placeholder="Email address"
                                     required
+                                    className="w-full rounded-xl border border-white/30 bg-white/20 px-4 py-3 text-white placeholder-gray-200 focus:border-green-400 focus:ring-green-400 focus:outline-none"
                                     value={data.email}
                                     onChange={(e) => setData('email', e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all duration-200 focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Enter your email"
                                 />
-                                {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email}</p>}
+                                {errors.email && <p className="mt-1 text-sm text-red-300">{errors.email}</p>}
                             </div>
 
-                            <button
+                            {/* Submit */}
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
                                 type="submit"
                                 disabled={processing}
-                                className="flex w-full items-center justify-center rounded-lg border border-transparent bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                                className="flex w-full justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 font-medium text-white shadow-lg hover:from-green-600 hover:to-green-700 disabled:opacity-50"
                             >
-                                {processing ? (
-                                    <>
-                                        <svg
-                                            className="mr-3 -ml-1 h-5 w-5 animate-spin text-white"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path
-                                                className="opacity-75"
-                                                fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                            ></path>
-                                        </svg>
-                                        Sending Magic Link...
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className="mr-2">🔗</span>
-                                        Send Magic Link
-                                    </>
-                                )}
-                            </button>
+                                {processing ? 'Sending Magic Link...' : 'Send Magic Link'}
+                            </motion.button>
                         </form>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </>
     );
