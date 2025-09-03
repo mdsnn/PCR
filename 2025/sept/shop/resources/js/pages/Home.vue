@@ -1,22 +1,3 @@
-<script setup lang="ts">
-import CardActions from '@/components/CardActions.vue';
-import CardHeader from '@/components/CardHeader.vue';
-import FeedCard from '@/components/FeedCard.vue';
-import { Link } from '@inertiajs/vue3';
-import { Bell, Home as HomeIcon, Map, MessageCircle, Plus, Search, ShoppingCart } from 'lucide-vue-next';
-// --- Feed Card Components (now pure Vue templates) ---
-const feedCards = [
-    'StoreProductCard',
-    'UserFoodPhotoCard',
-    'StoreRecipeVideoCard',
-    'PurchaseBroadcastCard',
-    'EventAttendanceCard',
-    'UserRecipeVideoCard',
-    'CheckInCard',
-];
-</script>
-
-<!-- Main Page -->
 <template>
     <div class="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 to-green-50">
         <!-- Header -->
@@ -58,7 +39,7 @@ const feedCards = [
                         href="/"
                         class="flex items-center space-x-3 rounded-xl bg-green-500 px-4 py-3 text-lg font-medium text-white transition-all hover:bg-green-600"
                     >
-                        <HomeIcon class="h-6 w-6" />
+                        <Home class="h-6 w-6" />
                         <span>Home</span>
                     </Link>
                     <Link
@@ -93,15 +74,16 @@ const feedCards = [
             <!-- Feed -->
             <main class="flex-1 p-4 lg:border-r lg:border-gray-200/60">
                 <div class="space-y-6">
-                    <FeedCard>
-                        <CardHeader avatar="bg-green-500" name="Kalundu Fresh" username="kalundu" time="2h" type="store" location="Lusaka" />
-                        <p class="text-gray-700">Example feed post content...</p>
-                        <CardActions :likes="12" :comments="3" :shares="2" />
-                    </FeedCard>
-
-                    <component v-for="(card, i) in feedCards" :is="card" :key="i" />
+                    <StoreProductCard />
+                    <UserFoodPhotoCard />
+                    <StoreRecipeVideoCard />
+                    <PurchaseBroadcastCard />
+                    <EventAttendanceCard />
+                    <UserRecipeVideoCard />
+                    <CheckInCard />
                 </div>
             </main>
+
             <!-- Right Sidebar -->
             <aside class="hidden w-80 p-4 lg:block">
                 <div class="sticky top-20 space-y-6">
@@ -132,7 +114,7 @@ const feedCards = [
             class="fixed right-0 bottom-0 left-0 z-10 flex justify-around border-t border-gray-200/60 bg-white/90 py-2 shadow-lg backdrop-blur-md lg:hidden"
         >
             <Link href="/" class="flex flex-col items-center p-2 text-green-600">
-                <HomeIcon class="h-5 w-5" />
+                <Home class="h-5 w-5" />
                 <span class="mt-1 text-xs font-medium">Home</span>
             </Link>
             <Link href="/search" class="flex flex-col items-center p-2 text-gray-500 hover:text-green-600">
@@ -161,3 +143,17 @@ const feedCards = [
         </button>
     </div>
 </template>
+
+<script setup>
+import { Link } from '@inertiajs/vue3';
+import { Bell, Home, Map, MessageCircle, Plus, Search, ShoppingCart } from 'lucide-vue-next';
+
+// Import the child components
+import CheckInCard from '@/components/CheckInCard.vue';
+import EventAttendanceCard from '@/components/EventAttendanceCard.vue';
+import PurchaseBroadcastCard from '@/components/PurchaseBroadcastCard.vue';
+import StoreProductCard from '@/components/StoreProductCard.vue';
+import StoreRecipeVideoCard from '@/components/StoreRecipeVideoCard.vue';
+import UserFoodPhotoCard from '@/components/UserFoodPhotoCard.vue';
+import UserRecipeVideoCard from '@/components/UserRecipeVideoCard.vue';
+</script>
