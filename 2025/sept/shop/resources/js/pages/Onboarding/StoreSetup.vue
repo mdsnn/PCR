@@ -4,9 +4,14 @@ import { ref } from 'vue';
 
 const name = ref('');
 const type = ref('');
+const location = ref('');
 
 function submit() {
-    router.post(route('onboarding.saveStore'), { name: name.value, type: type.value });
+    router.post(route('onboarding.saveStore'), {
+        name: name.value,
+        type: type.value,
+        location: location.value,
+    });
 }
 </script>
 
@@ -18,13 +23,17 @@ function submit() {
 
             <select v-model="type" class="rounded border px-3 py-2" required>
                 <option value="">Select Store Type</option>
-                <option value="fashion">Fashion</option>
-                <option value="electronics">Electronics</option>
-                <option value="groceries">Groceries</option>
-                <option value="other">Other</option>
+                <option value="farm">Farm Store</option>
+                <option value="poultry">Poultry</option>
+                <option value="bakery">Bakery</option>
+                <option value="grocery">Food Grocer</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="coffee">Coffee Shop</option>
             </select>
 
-            <button type="submit" class="rounded-lg bg-indigo-600 px-6 py-3 text-white disabled:opacity-50" :disabled="!name || !type">
+            <input v-model="location" type="text" placeholder="Store Location" class="rounded border px-3 py-2" required />
+
+            <button type="submit" class="rounded-lg bg-indigo-600 px-6 py-3 text-white disabled:opacity-50" :disabled="!name || !type || !location">
                 Finish Setup
             </button>
         </form>
