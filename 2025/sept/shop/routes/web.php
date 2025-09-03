@@ -10,3 +10,6 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return Inertia::render('Login');
 })->name('login');
+Route::get('/map', function () {
+    return Inertia::render('Map');
+})->name('map');
