@@ -70,6 +70,11 @@ class MagicLinkController extends Controller
 
         // Log the user in
         Auth::login($user, true); // Remember the user
+        
+        // 🔥 Redirect based on onboarding status
+        if (!$user->onboarding_complete) {
+        return redirect()->route('onboarding.start');
+        }
 
         return redirect()->route('home');
     }
