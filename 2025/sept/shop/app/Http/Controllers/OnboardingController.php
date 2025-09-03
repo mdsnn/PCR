@@ -42,23 +42,25 @@ class OnboardingController extends Controller
     // Step 2: Save store details
     public function saveStore(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|string|max:255',
-        ]);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'type' => 'required|string|max:255',
+        'location' => 'required|string|max:255',
+    ]);
 
-        $user = Auth::user();
+    $user = Auth::user();
 
-        Store::create([
-            'user_id' => $user->id,
-            'name' => $request->name,
-            'type' => $request->type,
-        ]);
+    $store = Store::create([
+        'user_id' => $user->id,
+        'name' => $request->name,
+        'type' => $request->type,
+        'location' => $request->location,
+    ]);
 
-        // Mark onboarding complete
-        $user->onboarding_complete = true;
-        $user->save();
+    $user->onboarding_complete = true;
+    $user->save();
 
-        return redirect()->route('home');
+    // Redirect based on type
+    return redirect()->route("dashboard.{$store->type}");
     }
 }
