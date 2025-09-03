@@ -6,7 +6,7 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'POTBELLY';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),

@@ -168,7 +168,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-import MobileListView from './components/MobileListView.vue';
+import MobileListView from '@/components/MobileListView.vue';
 
 // Fix default marker issue in Leaflet
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
