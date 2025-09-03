@@ -1,110 +1,10 @@
 <script setup lang="ts">
+import CardActions from '@/components/CardActions.vue';
+import CardHeader from '@/components/CardHeader.vue';
+import FeedCard from '@/components/FeedCard.vue';
 import { Link } from '@inertiajs/vue3';
-import {
-    Bell,
-    Calendar,
-    CheckCircle,
-    Clock,
-    Heart,
-    Home as HomeIcon,
-    Map,
-    MapPin,
-    MessageCircle,
-    MoreHorizontal,
-    Play,
-    Plus,
-    Search,
-    Share,
-    ShoppingCart,
-    Store,
-    User,
-} from 'lucide-vue-next';
-
-// --- Feed Card Components ---
-const FeedCard = defineComponent({
-    props: { className: { type: String, default: '' } },
-    setup(props, { slots }) {
-        return () => (
-            <div
-                class={[
-                    'rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-sm backdrop-blur-sm transition-shadow hover:shadow-md',
-                    props.className,
-                ]}
-            >
-                {slots.default?.()}
-            </div>
-        );
-    },
-});
-
-const CardHeader = defineComponent({
-    props: {
-        avatar: String,
-        name: String,
-        username: String,
-        time: String,
-        type: String,
-        location: String,
-    },
-    setup(props) {
-        return () => (
-            <div class="mb-4 flex items-start space-x-4">
-                <div class={['flex h-12 w-12 items-center justify-center rounded-full', props.avatar]}>
-                    {props.type === 'store' ? (
-                        <Store class="h-6 w-6 text-white" />
-                    ) : props.type === 'user' ? (
-                        <User class="h-6 w-6 text-white" />
-                    ) : null}
-                </div>
-                <div class="flex-1">
-                    <div class="flex items-center space-x-2">
-                        <h3 class="font-semibold text-gray-900">{props.name}</h3>
-                        {props.username && <span class="text-sm text-gray-500">@{props.username}</span>}
-                        <span class="text-gray-400">·</span>
-                        <span class="text-sm text-gray-500">{props.time}</span>
-                    </div>
-                    {props.location && (
-                        <div class="mt-1 flex items-center space-x-1">
-                            <MapPin class="h-3 w-3 text-gray-400" />
-                            <span class="text-xs text-gray-500">{props.location}</span>
-                        </div>
-                    )}
-                </div>
-                <button class="rounded-full p-2 hover:bg-gray-50">
-                    <MoreHorizontal class="h-4 w-4 text-gray-400" />
-                </button>
-            </div>
-        );
-    },
-});
-
-const CardActions = defineComponent({
-    props: {
-        likes: { type: Number, default: 0 },
-        comments: { type: Number, default: 0 },
-        shares: { type: Number, default: 0 },
-    },
-    setup(props) {
-        return () => (
-            <div class="flex items-center justify-between border-t border-gray-100 pt-4">
-                <button class="flex items-center space-x-2 text-gray-500 transition-colors hover:text-red-500">
-                    <Heart class="h-5 w-5" />
-                    <span class="text-sm">{props.likes}</span>
-                </button>
-                <button class="flex items-center space-x-2 text-gray-500 transition-colors hover:text-blue-500">
-                    <MessageCircle class="h-5 w-5" />
-                    <span class="text-sm">{props.comments}</span>
-                </button>
-                <button class="flex items-center space-x-2 text-gray-500 transition-colors hover:text-green-500">
-                    <Share class="h-5 w-5" />
-                    <span class="text-sm">{props.shares}</span>
-                </button>
-            </div>
-        );
-    },
-});
-
-// --- Feed Cards ---
+import { Bell, Home as HomeIcon, Map, MessageCircle, Plus, Search, ShoppingCart } from 'lucide-vue-next';
+// --- Feed Card Components (now pure Vue templates) ---
 const feedCards = [
     'StoreProductCard',
     'UserFoodPhotoCard',
@@ -116,6 +16,7 @@ const feedCards = [
 ];
 </script>
 
+<!-- Main Page -->
 <template>
     <div class="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 to-green-50">
         <!-- Header -->
@@ -192,11 +93,15 @@ const feedCards = [
             <!-- Feed -->
             <main class="flex-1 p-4 lg:border-r lg:border-gray-200/60">
                 <div class="space-y-6">
-                    <!-- Render all feed cards -->
+                    <FeedCard>
+                        <CardHeader avatar="bg-green-500" name="Kalundu Fresh" username="kalundu" time="2h" type="store" location="Lusaka" />
+                        <p class="text-gray-700">Example feed post content...</p>
+                        <CardActions :likes="12" :comments="3" :shares="2" />
+                    </FeedCard>
+
                     <component v-for="(card, i) in feedCards" :is="card" :key="i" />
                 </div>
             </main>
-
             <!-- Right Sidebar -->
             <aside class="hidden w-80 p-4 lg:block">
                 <div class="sticky top-20 space-y-6">
