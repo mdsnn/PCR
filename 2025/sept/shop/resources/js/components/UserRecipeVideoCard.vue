@@ -39,8 +39,8 @@
 </template>
 
 <script setup>
-import CardActions from '@/Components/CardActions.vue';
-import CardHeader from '@/Components/CardHeader.vue';
-import FeedCard from '@/Components/FeedCard.vue';
+import CardActions from '@/components/CardActions.vue';
+import CardHeader from '@/components/CardHeader.vue';
+import FeedCard from '@/components/FeedCard.vue';
 import { Play } from 'lucide-vue-next';
 </script>
