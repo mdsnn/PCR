@@ -40,10 +40,10 @@ class MagicLinkController extends Controller
             'url' => route('magic-link.verify', ['token' => $magicLink->token])
         ], function ($message) use ($email) {
             $message->to($email)
-                   ->subject('Your Magic Login Link');
+                   ->subject('Your Login Link');
         });
 
-        return back()->with('success', 'Magic link sent to your email!');
+        return back()->with('success', 'Login link sent to your email!');
     }
 
     public function verify($token)
@@ -52,7 +52,7 @@ class MagicLinkController extends Controller
 
         if (!$magicLink || !$magicLink->isValid()) {
             throw ValidationException::withMessages([
-                'token' => ['This magic link is invalid or has expired.'],
+                'token' => ['This login link is invalid or has expired.'],
             ]);
         }
 
