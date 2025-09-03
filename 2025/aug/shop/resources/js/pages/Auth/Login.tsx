@@ -83,7 +83,7 @@ export default function Login({ flash }) {
                                 disabled={processing || !isValidEmail(data.email)} // 🚀 check format
                                 className="flex w-full justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 font-medium text-white shadow-lg hover:from-green-600 hover:to-green-700 disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                                {processing ? 'Sending Login Link...' : 'Continue With Email'}
+                                {processing ? 'Sending Login Link...' : 'Send Login Link'}
                             </motion.button>
                         </form>
                     </div>
