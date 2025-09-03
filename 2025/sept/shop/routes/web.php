@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [MagicLinkController::class, 'logout'])->name('logout');
     Route::get('/onboarding', [OnboardingController::class, 'start'])->name('onboarding.start');
     Route::post('/onboarding/choose-role', [OnboardingController::class, 'chooseRole'])->name('onboarding.chooseRole');
-    Route::post('/onboarding/complete', [OnboardingController::class, 'complete'])->name('onboarding.complete');
+    Route::get('/onboarding/store-setup', [OnboardingController::class, 'storeSetup'])->name('onboarding.storeSetup');
+    Route::post('/onboarding/store-setup', [OnboardingController::class, 'saveStore'])->name('onboarding.saveStore');
 
 });
