@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
+            $table->boolean('onboarding_complete')->default(false);
+            $table->boolean('is_seller')->default(false); // optional, if you want to track role
             $table->rememberToken();
             $table->timestamps();
         });
