@@ -19,6 +19,7 @@ export default function Login({ flash }) {
         { size: 300, top: '60%', right: '15%', delay: 2 },
         { size: 150, bottom: '15%', left: '25%', delay: 4 },
     ];
+    const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
     return (
         <>
@@ -52,7 +53,7 @@ export default function Login({ flash }) {
                     className="relative z-10 w-full max-w-md"
                 >
                     <div className="rounded-2xl bg-white/20 p-8 shadow-2xl backdrop-blur-lg">
-                        <h2 className="mb-6 text-center text-3xl font-extrabold text-white">POTBELLY ERA</h2>
+                        <h2 className="mb-6 text-center text-3xl font-extrabold text-white">POTBELLY</h2>
 
                         {/* Success Message */}
                         {flash?.success && (
@@ -79,10 +80,10 @@ export default function Login({ flash }) {
                             <motion.button
                                 whileTap={{ scale: 0.95 }}
                                 type="submit"
-                                disabled={processing}
-                                className="flex w-full justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 font-medium text-white shadow-lg hover:from-green-600 hover:to-green-700 disabled:opacity-50"
+                                disabled={processing || !isValidEmail(data.email)} // 🚀 check format
+                                className="flex w-full justify-center rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 font-medium text-white shadow-lg hover:from-green-600 hover:to-green-700 disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                                {processing ? 'Sending Magic Link...' : 'Send Magic Link'}
+                                {processing ? 'Sending Login Link...' : 'Continue With Email'}
                             </motion.button>
                         </form>
                     </div>
