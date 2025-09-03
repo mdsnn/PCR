@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Magic Login Link</title>
+    <title>Login Link</title>
 </head>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: #f8f9fa; padding: 30px; border-radius: 10px; text-align: center;">
-        <h1 style="color: #2563eb; margin-bottom: 20px;">✨ Your Magic Login Link</h1>
+        <h1 style="color: #2563eb; margin-bottom: 20px;">✨ Your Login Link</h1>
         
         <p style="font-size: 16px; margin-bottom: 30px;">
             Click the button below to securely log into your account. This link will expire in 15 minutes.
