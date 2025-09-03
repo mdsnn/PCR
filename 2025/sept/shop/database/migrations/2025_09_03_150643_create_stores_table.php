@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->string('type'); // e.g., fashion, electronics, etc.
+            $table->string('type'); // e.g. farm, poultry, bakery, etc.
+            $table->string('location'); // city, town, or address
             $table->timestamps();
         });
     }
