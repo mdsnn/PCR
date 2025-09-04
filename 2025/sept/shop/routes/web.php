@@ -18,11 +18,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [MagicLinkController::class, 'logout'])->name('logout');
 
     Route::get('/onboarding', [OnboardingController::class, 'start'])->name('onboarding.start');
-    
-    Route::post('/onboarding/choose-role', [OnboardingController::class, 'chooseRole'])->name('onboarding.chooseRole');
+    Route::post('/onboarding/role', [OnboardingController::class, 'chooseRole'])->name('onboarding.chooseRole');
+
     Route::get('/onboarding/store-setup', [OnboardingController::class, 'storeSetup'])->name('onboarding.storeSetup');
-    Route::post('/onboarding/store-setup', [OnboardingController::class, 'saveStore'])->name('onboarding.saveStore');
-    
+    Route::post('/onboarding/store-setup/save', [OnboardingController::class, 'saveStoreStep'])->name('onboarding.saveStoreStep');
+
     
     Route::get('/dashboard/farm', [DashboardController::class, 'farm'])->name('dashboard.farm');
     Route::get('/dashboard/poultry', [DashboardController::class, 'poultry'])->name('dashboard.poultry');
