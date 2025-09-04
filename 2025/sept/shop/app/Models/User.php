@@ -51,23 +51,24 @@ class User extends Authenticatable
     }
     public function redirectAfterLogin()
     {
-    // If onboarding incomplete → onboarding
-    if (!$this->onboarding_complete) {
-        return route('onboarding.start');
-    }
-
-    // If seller → redirect based on store type
-    if ($this->is_seller && $this->store) {
-        $type = $this->store->type;
-
-        if (in_array($type, ['farm','poultry','bakery','grocery','restaurant','coffee'])) {
-            return route("dashboard.{$type}");
+        // Step 1: Onboarding check
+        if (!$this->onboarding_complete) {
+            return route('onboarding.start');
         }
 
-        return route("dashboard.default"); // fallback
-    }
+        // Step 2: Seller check
+        if ($this->is_seller && $this->store) {
+            $type = $this->store->type;
 
-    // Default → buyers go home
-    return route('home');
+            if (in_array($type, ['farm','poultry','bakery','grocery','restaurant','coffee'])) {
+                return route("dashboard.{$type}");
+            }
+
+            // fallback dashboard for unknown store types
+            return route("dashboard.default");
+        }
+
+        // Step 3: Default buyer redirect
+        return route('home');
     }
 }
