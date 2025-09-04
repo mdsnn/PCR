@@ -14,12 +14,9 @@ return new class extends Migration
         Schema::create('stores', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('name')->nullable();
-            $table->string('type')->nullable();
-            $table->decimal('latitude', 10, 7)->nullable();
-            $table->decimal('longitude', 10, 7)->nullable();
-            $table->integer('setup_step')->default(1);
-            $table->boolean('setup_complete')->default(false);
+            $table->string('name');
+            $table->string('type'); // e.g. farm, poultry, bakery, etc.
+            $table->string('location'); // city, town, or address
             $table->timestamps();
         });
     }
