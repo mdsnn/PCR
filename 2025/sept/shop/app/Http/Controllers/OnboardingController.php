@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Store;
@@ -22,12 +24,13 @@ class OnboardingController extends Controller
         if ($request->role === 'seller') {
             $user->is_seller = true;
             $user->save();
+
             return redirect()->route('onboarding.storeSetup');
         }
 
         $user->onboarding_complete = true;
         $user->save();
-public
+
         return redirect()->route('home');
     }
 
@@ -38,28 +41,27 @@ public
     }
 
     // Step 2: Save store details
-     public function saveStore(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'type' => 'required|string|max:255',
-        'location' => 'required|string|max:255',
-    ]);
+    public function saveStore(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'type'     => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+        ]);
 
-    $user = Auth::user();
+        $user = Auth::user();
 
-    $store = Store::create([
-        'user_id' => $user->id,
-        'name' => $request->name,
-        'type' => $request->type,
-        'location' => $request->location,
-    ]);
+        $store = Store::create([
+            'user_id'  => $user->id,
+            'name'     => $request->name,
+            'type'     => $request->type,
+            'location' => $request->location,
+        ]);
 
-    $user->onboarding_complete = true;
-    $user->save();
+        $user->onboarding_complete = true;
+        $user->save();
 
-    // Redirect based on type
-    return redirect()->route("dashboard.{$store->type}");
+        // Redirect based on store type
+        return redirect()->route("dashboard.{$store->type}");
     }
-
 }
