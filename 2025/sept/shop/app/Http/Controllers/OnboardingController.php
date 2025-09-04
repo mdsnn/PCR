@@ -1,21 +1,16 @@
-<?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class OnboardingController extends Controller
 {
-    // Step 0: Welcome/start page
     public function start()
     {
-        return Inertia::render('Onboarding/Start');
+        return inertia('Onboarding/Start');
     }
 
-    // Step 1: Choose role (buyer/seller)
     public function chooseRole(Request $request)
     {
         $request->validate([
@@ -27,81 +22,41 @@ class OnboardingController extends Controller
         if ($request->role === 'seller') {
             $user->is_seller = true;
             $user->save();
-
-            // ensure store record exists for seller
-            $store = Store::firstOrCreate(
-                ['user_id' => $user->id],
-                ['setup_step' => 1]
-            );
-
             return redirect()->route('onboarding.storeSetup');
         }
 
-        // if buyer → finish onboarding
         $user->onboarding_complete = true;
         $user->save();
 
         return redirect()->route('home');
     }
 
-    // Step 2: Show store setup wizard (persistent)
-    public function storeSetup(Request $request)
+    // Step 1: Store setup form
+    public function storeSetup()
     {
-        $store = Store::firstOrCreate(
-            ['user_id' => $request->user()->id],
-            ['setup_step' => 1]
-        );
-
-        return Inertia::render('Onboarding/StoreSetup', [
-            'store' => $store
-        ]);
+        return inertia('Onboarding/StoreSetup');
     }
 
-    // Step 3: Save step progress with validation
-    public function saveStoreStep(Request $request)
+    // Step 2: Save store details
+    public function saveStore(Request $request)
     {
-        $store = Store::where('user_id', $request->user()->id)->firstOrFail();
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+        ]);
 
-        // Validate based on the current step
-        $rules = [];
-        switch ($request->step) {
-            case 1:
-                $rules = ['name' => 'required|string|max:255'];
-                break;
-            case 2:
-                $rules = [
-                    'name' => 'required|string|max:255',
-                    'type' => 'required|string|max:255'
-                ];
-                break;
-            case 3:
-                $rules = [
-                    'name' => 'required|string|max:255',
-                    'type' => 'required|string|max:255',
-                    'latitude' => 'required|numeric|between:-90,90',
-                    'longitude' => 'required|numeric|between:-180,180'
-                ];
-                break;
-        }
+        $user = Auth::user();
 
-        $validated = $request->validate($rules);
+        Store::create([
+            'user_id' => $user->id,
+            'name' => $request->name,
+            'type' => $request->type,
+        ]);
 
-        // Update store with validated data
-        $store->fill($request->only(['name', 'type', 'latitude', 'longitude']));
-        $store->setup_step = max($store->setup_step, $request->step); // Don't go backwards
+        // Mark onboarding complete
+        $user->onboarding_complete = true;
+        $user->save();
 
-        // if last step → mark complete
-        if ($request->step == 3 && $request->completed) {
-            $store->setup_complete = true;
-
-            // mark user onboarding as complete
-            $user = Auth::user();
-            $user->onboarding_complete = true;
-            $user->save();
-        }
-
-        $store->save();
-
-        return back()->with('success', 'Progress saved!');
+        return redirect()->route('home');
     }
 }
