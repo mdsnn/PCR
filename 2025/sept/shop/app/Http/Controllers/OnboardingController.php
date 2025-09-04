@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class OnboardingController extends Controller
 {
+    // Step 0: Welcome/start page
     public function start()
     {
-        return inertia('Onboarding/Start');
+        return Inertia::render('Onboarding/Start');
     }
 
+    // Step 1: Choose role (buyer/seller)
     public function chooseRole(Request $request)
     {
         $request->validate([
@@ -24,43 +27,56 @@ class OnboardingController extends Controller
         if ($request->role === 'seller') {
             $user->is_seller = true;
             $user->save();
+
+            // ensure store record exists for seller
+            $store = Store::firstOrCreate(
+                ['user_id' => $user->id],
+                ['setup_step' => 1]
+            );
+
             return redirect()->route('onboarding.storeSetup');
         }
 
+        // if buyer → finish onboarding
         $user->onboarding_complete = true;
         $user->save();
 
         return redirect()->route('home');
     }
 
-    // Step 1: Store setup form
-    public function storeSetup()
+    // Step 2: Show store setup wizard (persistent)
+    public function storeSetup(Request $request)
     {
-        return inertia('Onboarding/StoreSetup');
+        $store = Store::firstOrCreate(
+            ['user_id' => $request->user()->id],
+            ['setup_step' => 1]
+        );
+
+        return Inertia::render('Onboarding/StoreSetup', [
+            'store' => $store
+        ]);
     }
 
-    // Step 2: Save store details
-    public function saveStore(Request $request)
+    // Step 3: Save step progress
+    public function saveStoreStep(Request $request)
     {
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'type' => 'required|string|max:255',
-        'location' => 'required|string|max:255',
-    ]);
+        $store = Store::where('user_id', $request->user()->id)->firstOrFail();
 
-    $user = Auth::user();
+        $store->fill($request->only(['name','type','latitude','longitude']));
+        $store->setup_step = $request->step;
 
-    $store = Store::create([
-        'user_id' => $user->id,
-        'name' => $request->name,
-        'type' => $request->type,
-        'location' => $request->location,
-    ]);
+        // if last step → mark complete
+        if ($request->step == 3 && $request->completed) {
+            $store->setup_complete = true;
 
-    $user->onboarding_complete = true;
-    $user->save();
+            // mark user onboarding as complete
+            $user = Auth::user();
+            $user->onboarding_complete = true;
+            $user->save();
+        }
 
-    // Redirect based on type
-    return redirect()->route("dashboard.{$store->type}");
+        $store->save();
+
+        return back()->with('success', 'Progress saved!');
     }
 }
