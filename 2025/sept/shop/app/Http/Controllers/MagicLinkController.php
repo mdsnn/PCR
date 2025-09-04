@@ -48,43 +48,44 @@ class MagicLinkController extends Controller
 
     public function verify($token)
     {
-        $magicLink = MagicLink::where('token', $token)->first();
+    $magicLink = MagicLink::where('token', $token)->first();
 
-        if (!$magicLink || !$magicLink->isValid()) {
-            throw ValidationException::withMessages([
-                'token' => ['This login link is invalid or has expired.'],
-            ]);
-        }
+    if (!$magicLink || !$magicLink->isValid()) {
+        throw ValidationException::withMessages([
+            'token' => ['This login link is invalid or has expired.'],
+        ]);
+    }
 
-        // Find user and log them in
-        $user = User::where('email', $magicLink->email)->first();
-        
-        if (!$user) {
-            throw ValidationException::withMessages([
-                'token' => ['User not found.'],
-            ]);
-        }
+    $user = User::where('email', $magicLink->email)->first();
 
-        // Mark magic link as used
-        $magicLink->markAsUsed();
+    if (!$user) {
+        throw ValidationException::withMessages([
+            'token' => ['User not found.'],
+        ]);
+    }
 
-        // Log the user in
-        Auth::login($user, true); // Remember the user
-        
-        // 🔥 Redirect based on onboarding status
-        if (!$user->onboarding_complete) {
+    $magicLink->markAsUsed();
+    Auth::login($user, true);
+
+    // 🔹 Onboarding check
+    if (!$user->onboarding_complete) {
         return redirect()->route('onboarding.start');
+    }
+
+    // 🔹 Seller check & redirect to dashboard
+    if ($user->is_seller && $user->store) {
+        $type = $user->store->type;
+
+        if (in_array($type, ['farm','poultry','bakery','grocery','restaurant','coffee'])) {
+            return redirect()->route("dashboard.{$type}");
         }
 
-        return redirect()->route('home');
+        // fallback dashboard (for unknown types)
+        return redirect()->route("dashboard.default");
     }
 
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('login');
+    // 🔹 Default buyer redirect
+    return redirect()->route('home');
     }
+
 }
