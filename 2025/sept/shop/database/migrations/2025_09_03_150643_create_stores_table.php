@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('type'); // e.g. farm, poultry, bakery, etc.
             $table->string('location'); // city, town, or address
+            $table->decimal('latitude', 10, 8)->nullable(); // Geolocation latitude
+            $table->decimal('longitude', 11, 8)->nullable(); // Geolocation longitude
             $table->timestamps();
         });
     }
