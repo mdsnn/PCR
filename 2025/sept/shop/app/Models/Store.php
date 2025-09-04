@@ -15,6 +15,8 @@ class Store extends Model
         'name',
         'type',
         'location',
+        'latitude',
+        'longitude',
     ];
 
     /**
