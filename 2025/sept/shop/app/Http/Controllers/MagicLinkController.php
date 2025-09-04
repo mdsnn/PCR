@@ -46,8 +46,8 @@ class MagicLinkController extends Controller
         return back()->with('success', 'Login link sent to your email!');
     }
 
-    public function verify($token)
-    {
+    public function verify($token) 
+{
     $magicLink = MagicLink::where('token', $token)->first();
 
     if (!$magicLink || !$magicLink->isValid()) {
@@ -64,15 +64,16 @@ class MagicLinkController extends Controller
         ]);
     }
 
+    // Mark link used & login
     $magicLink->markAsUsed();
     Auth::login($user, true);
 
-    // 🔹 Onboarding check
+    // 🔹 Step 1: Onboarding check
     if (!$user->onboarding_complete) {
         return redirect()->route('onboarding.start');
     }
 
-    // 🔹 Seller check & redirect to dashboard
+    // 🔹 Step 2: Seller redirect (store dashboards)
     if ($user->is_seller && $user->store) {
         $type = $user->store->type;
 
@@ -80,12 +81,12 @@ class MagicLinkController extends Controller
             return redirect()->route("dashboard.{$type}");
         }
 
-        // fallback dashboard (for unknown types)
+        // fallback dashboard for unknown store types
         return redirect()->route("dashboard.default");
     }
 
-    // 🔹 Default buyer redirect
+    // 🔹 Step 3: Buyer fallback (home page)
     return redirect()->route('home');
-    }
+}
 
 }
