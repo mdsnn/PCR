@@ -16,7 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('type'); // e.g. farm, poultry, bakery, etc.
-            $table->string('location'); // city, town, or address
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->integer('setup_step')->default(1); // current step
+            $table->boolean('setup_complete')->default(false);
             $table->timestamps();
         });
     }
