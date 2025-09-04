@@ -9,11 +9,15 @@ class Store extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
         'user_id',
         'name',
         'type',
-        'location',
+        'latitude',
+        'longitude',
+        'setup_step',
+        'setup_complete',
     ];
 
     /**
