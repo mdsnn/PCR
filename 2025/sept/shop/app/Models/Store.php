@@ -14,10 +14,7 @@ class Store extends Model
         'user_id',
         'name',
         'type',
-        'latitude',
-        'longitude',
-        'setup_step',
-        'setup_complete',
+        'location',
     ];
 
     /**
