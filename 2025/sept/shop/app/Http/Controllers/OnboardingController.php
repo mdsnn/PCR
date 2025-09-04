@@ -44,18 +44,22 @@ class OnboardingController extends Controller
     public function saveStore(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'type'     => 'required|string|max:255',
-            'location' => 'required|string|max:255',
+            'name'      => 'required|string|max:255',
+            'type'      => 'required|string|max:255',
+            'location'  => 'required|string|max:255',
+            'latitude'  => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ]);
 
         $user = Auth::user();
 
         $store = Store::create([
-            'user_id'  => $user->id,
-            'name'     => $request->name,
-            'type'     => $request->type,
-            'location' => $request->location,
+            'user_id'   => $user->id,
+            'name'      => $request->name,
+            'type'      => $request->type,
+            'location'  => $request->location,
+            'latitude'  => $request->latitude,
+            'longitude' => $request->longitude,
         ]);
 
         $user->onboarding_complete = true;
