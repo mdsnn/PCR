@@ -30,7 +30,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/grocery', [DashboardController::class, 'grocery'])->name('dashboard.grocery');
     Route::get('/dashboard/restaurant', [DashboardController::class, 'restaurant'])->name('dashboard.restaurant');
     Route::get('/dashboard/coffee', [DashboardController::class, 'coffee'])->name('dashboard.coffee');
-
+    Route::get('/dashboard/default', function () {
+    return Inertia::render('Dashboard/Default');})->name('dashboard.default');
+    
     Route::get('/map', function () {
     return Inertia::render('Map');
 })->name('map');
