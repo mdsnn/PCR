@@ -47,6 +47,27 @@ class User extends Authenticatable
     }
     public function store()
     {
-    return $this->hasOne(Store::class);
+        return $this->hasOne(Store::class);
+    }
+    public function redirectAfterLogin()
+    {
+    // If onboarding incomplete → onboarding
+    if (!$this->onboarding_complete) {
+        return route('onboarding.start');
+    }
+
+    // If seller → redirect based on store type
+    if ($this->is_seller && $this->store) {
+        $type = $this->store->type;
+
+        if (in_array($type, ['farm','poultry','bakery','grocery','restaurant','coffee'])) {
+            return route("dashboard.{$type}");
+        }
+
+        return route("dashboard.default"); // fallback
+    }
+
+    // Default → buyers go home
+    return route('home');
     }
 }
