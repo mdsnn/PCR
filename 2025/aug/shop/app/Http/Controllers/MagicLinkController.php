@@ -48,31 +48,37 @@ class MagicLinkController extends Controller
 
     public function verify($token)
     {
-        $magicLink = MagicLink::where('token', $token)->first();
+    $magicLink = MagicLink::where('token', $token)->first();
 
-        if (!$magicLink || !$magicLink->isValid()) {
-            throw ValidationException::withMessages([
-                'token' => ['This magic link is invalid or has expired.'],
-            ]);
-        }
-
-        // Find user and log them in
-        $user = User::where('email', $magicLink->email)->first();
-        
-        if (!$user) {
-            throw ValidationException::withMessages([
-                'token' => ['User not found.'],
-            ]);
-        }
-
-        // Mark magic link as used
-        $magicLink->markAsUsed();
-
-        // Log the user in
-        Auth::login($user, true); // Remember the user
-
-        return redirect()->route('home');
+    if (!$magicLink || !$magicLink->isValid()) {
+        throw ValidationException::withMessages([
+            'token' => ['This login link is invalid or has expired.'],
+        ]);
     }
+
+    $user = User::where('email', $magicLink->email)->first();
+
+    if (!$user) {
+        throw ValidationException::withMessages([
+            'token' => ['User not found.'],
+        ]);
+    }
+
+    $magicLink->markAsUsed();
+    Auth::login($user, true);
+
+    // 🚀 Routing logic
+    if (!$user->onboarding_complete) {
+        return redirect()->route('onboarding.start');
+    }
+
+    if ($user->is_seller && $user->store) {
+        return redirect()->route("dashboard.{$user->store->type}");
+    }
+
+    return redirect()->route('home');
+    }
+
 
     public function logout(Request $request)
     {
