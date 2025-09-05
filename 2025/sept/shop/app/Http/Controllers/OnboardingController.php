@@ -146,7 +146,6 @@ class OnboardingController extends Controller
 
         $request->validate([
         'name' => 'required|string|max:255',
-        'location' => 'nullable|string|max:255',
         'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
       ]);
 
@@ -160,7 +159,6 @@ class OnboardingController extends Controller
 
         $user->update([
             'name' => $request->name,
-            'location' => $request->location,
             'profile_picture' => $profilePicturePath,
         ]);
 
