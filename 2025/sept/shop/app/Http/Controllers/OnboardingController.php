@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class OnboardingController extends Controller
 {
@@ -49,9 +50,15 @@ class OnboardingController extends Controller
             'location'  => 'required|string|max:255',
             'latitude'  => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
+            'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $user = Auth::user();
+        
+        $logoPath = null;
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('store-logos', 'public');
+        }
 
         $store = Store::create([
             'user_id'   => $user->id,
@@ -60,12 +67,26 @@ class OnboardingController extends Controller
             'location'  => $request->location,
             'latitude'  => $request->latitude,
             'longitude' => $request->longitude,
+            'logo'      => $logoPath,
         ]);
 
         $user->onboarding_complete = true;
         $user->save();
 
-        // Redirect based on store type
-        return redirect()->route("dashboard.{$store->type}");
+        // Redirect to setup completion page instead of direct dashboard
+        return redirect()->route('onboarding.setupComplete', ['store' => $store->id]);
+    }
+
+    // New method for setup completion page
+    public function setupComplete(Store $store)
+    {
+        // Make sure the store belongs to the authenticated user
+        if ($store->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return inertia('Onboarding/SetupComplete', [
+            'store' => $store
+        ]);
     }
 }
