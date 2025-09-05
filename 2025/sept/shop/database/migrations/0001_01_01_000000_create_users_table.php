@@ -19,6 +19,17 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->boolean('onboarding_complete')->default(false);
             $table->boolean('is_seller')->default(false); // optional, if you want to track role
+            $table->boolean('onboarding_complete')->default(false);
+            $table->text('bio')->nullable();
+            $table->string('location')->nullable();
+            $table->json('allergies')->nullable();
+            $table->json('dietary_restrictions')->nullable();
+            $table->json('favorite_cuisines')->nullable();
+            $table->string('spice_tolerance')->nullable();
+            $table->json('food_interests')->nullable();
+            $table->string('cooking_level')->nullable();
+            $table->json('social_preferences')->nullable();
+            $table->json('notification_preferences')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
