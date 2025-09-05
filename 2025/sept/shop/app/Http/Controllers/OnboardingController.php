@@ -79,7 +79,7 @@ class OnboardingController extends Controller
             'longitude'   => 'nullable|numeric|between:-180,180',
             'logo'        => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'phone'       => 'nullable|string|max:20',
-            'website'     => 'nullable|url|max:255',
+            
         ]);
 
         $logoPath = null;
@@ -145,30 +145,21 @@ class OnboardingController extends Controller
         }
 
         $request->validate([
-            'username' => [
-                'required',
-                'string',
-                'max:255',
-                'alpha_dash',
-                Rule::unique('users', 'username')->ignore($user->id)
-            ],
-            'bio' => 'nullable|string|max:500',
-            'location' => 'nullable|string|max:255',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        'name' => 'required|string|max:255',
+        'location' => 'nullable|string|max:255',
+        'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+      ]);
 
-        $profilePicturePath = $user->profile_picture;
+       $profilePicturePath = $user->profile_picture;
         if ($request->hasFile('profile_picture')) {
-            // Delete old profile picture if exists
             if ($profilePicturePath && Storage::disk('public')->exists($profilePicturePath)) {
-                Storage::disk('public')->delete($profilePicturePath);
+            Storage::disk('public')->delete($profilePicturePath);
             }
             $profilePicturePath = $request->file('profile_picture')->store('profile-pictures', 'public');
         }
 
         $user->update([
-            'username' => $request->username,
-            'bio' => $request->bio,
+            'name' => $request->name,
             'location' => $request->location,
             'profile_picture' => $profilePicturePath,
         ]);
@@ -185,14 +176,9 @@ class OnboardingController extends Controller
         }
 
         return inertia('Onboarding/DietaryPreferences', [
-            'user' => $user->only([
-                'allergies', 'dietary_restrictions', 'favorite_cuisines', 'spice_tolerance'
-            ]),
-            'commonAllergies' => $this->getCommonAllergies(),
-            'dietaryOptions' => $this->getDietaryOptions(),
-            'cuisineOptions' => $this->getCuisineOptions(),
-            'spiceOptions' => $this->getSpiceOptions(),
-            'progress' => $this->calculateUserOnboardingProgress($user, 2)
+        'user' => $user->only(['allergies', 'dietary_restrictions']),
+        'commonAllergies' => $this->getCommonAllergies(),
+        'dietaryOptions' => $this->getDietaryOptions(),
         ]);
     }
 
@@ -205,20 +191,17 @@ class OnboardingController extends Controller
         }
 
         $request->validate([
-            'allergies' => 'nullable|array|max:10',
-            'allergies.*' => 'string|max:100',
-            'dietary_restrictions' => 'nullable|array|max:10',
-            'dietary_restrictions.*' => 'string|max:100',
-            'favorite_cuisines' => 'nullable|array|max:15',
-            'favorite_cuisines.*' => 'string|max:100',
-            'spice_tolerance' => 'nullable|in:none,mild,medium,hot,very_hot',
+        'allergies' => 'nullable|array|max:10',
+        'allergies.*' => 'string|max:100',
+        'dietary_restrictions' => 'nullable|array|max:10',
+        'dietary_restrictions.*' => 'string|max:100',
         ]);
 
         $user->update([
-            'allergies' => $request->allergies ?? [],
-            'dietary_restrictions' => $request->dietary_restrictions ?? [],
-            'favorite_cuisines' => $request->favorite_cuisines ?? [],
-            'spice_tolerance' => $request->spice_tolerance,
+        'allergies' => $request->allergies ?? [],
+        'dietary_restrictions' => $request->dietary_restrictions ?? [],
+        'onboarding_complete' => true,
+        'email_verified_at' => now(),
         ]);
 
         return redirect()->route('onboarding.interests');
