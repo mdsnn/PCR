@@ -18,9 +18,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('username')->nullable();
+            $table->string('profile_picture')->nullable();
             $table->boolean('onboarding_complete')->default(false);
             $table->boolean('is_seller')->default(false); // optional, if you want to track role
-            $table->boolean('onboarding_complete')->default(false);
             $table->text('bio')->nullable();
             $table->string('location')->nullable();
             $table->json('allergies')->nullable();

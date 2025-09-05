@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Store;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class OnboardingController extends Controller
 {
@@ -29,11 +29,13 @@ class OnboardingController extends Controller
             return redirect()->route('onboarding.storeSetup');
         }
 
-        $user->onboarding_complete = true;
-        $user->save();
-
-        return redirect()->route('home');
+        // Redirect to user onboarding flow instead of completing immediately
+        return redirect()->route('onboarding.userProfile');
     }
+
+    // ===================
+    // SELLER ONBOARDING
+    // ===================
 
     // Step 1: Store setup form
     public function storeSetup()
@@ -73,11 +75,10 @@ class OnboardingController extends Controller
         $user->onboarding_complete = true;
         $user->save();
 
-        // Redirect to setup completion page instead of direct dashboard
+        // Redirect based on store type
         return redirect()->route('onboarding.setupComplete', ['store' => $store->id]);
+    
     }
-
-    // New method for setup completion page
     public function setupComplete(Store $store)
     {
         // Make sure the store belongs to the authenticated user
@@ -88,5 +89,185 @@ class OnboardingController extends Controller
         return inertia('Onboarding/SetupComplete', [
             'store' => $store
         ]);
+    }
+
+    // ===================
+    // USER ONBOARDING
+    // ===================
+
+    // Step 1: Collect user profile information
+    public function userProfile()
+    {
+        $user = Auth::user();
+        
+        return inertia('Onboarding/UserProfile', [
+            'user' => $user
+        ]);
+    }
+
+    // Step 2: Save profile and go to dietary preferences
+    public function saveUserProfile(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'bio' => 'nullable|string|max:500',
+            'location' => 'nullable|string|max:255',
+        ]);
+
+        $user = Auth::user();
+        
+        $user->update([
+            'username' => $request->username,
+            'bio' => $request->bio,
+            'location' => $request->location,
+        ]);
+
+        return redirect()->route('onboarding.dietaryPreferences');
+    }
+
+    // Step 3: Collect dietary preferences and allergies
+    public function dietaryPreferences()
+    {
+        $user = Auth::user();
+        
+        return inertia('Onboarding/DietaryPreferences', [
+            'user' => $user,
+            'commonAllergies' => $this->getCommonAllergies(),
+            'dietaryOptions' => $this->getDietaryOptions()
+        ]);
+    }
+
+    // Step 4: Save dietary preferences
+    public function saveDietaryPreferences(Request $request)
+    {
+        $request->validate([
+            'allergies' => 'nullable|array',
+            'allergies.*' => 'string|max:100',
+            'dietary_restrictions' => 'nullable|array',
+            'dietary_restrictions.*' => 'string|max:100',
+            'favorite_cuisines' => 'nullable|array',
+            'favorite_cuisines.*' => 'string|max:100',
+            'spice_tolerance' => 'nullable|in:none,mild,medium,hot,very_hot',
+        ]);
+
+        $user = Auth::user();
+        
+        $user->update([
+            'allergies' => $request->allergies ?? [],
+            'dietary_restrictions' => $request->dietary_restrictions ?? [],
+            'favorite_cuisines' => $request->favorite_cuisines ?? [],
+            'spice_tolerance' => $request->spice_tolerance,
+        ]);
+
+        return redirect()->route('onboarding.interests');
+    }
+
+    // Step 5: Food interests and social preferences
+    public function interests()
+    {
+        $user = Auth::user();
+        
+        return inertia('Onboarding/Interests', [
+            'user' => $user,
+            'interestCategories' => $this->getInterestCategories()
+        ]);
+    }
+
+    // Step 6: Save interests and complete onboarding
+    public function saveInterests(Request $request)
+    {
+        $request->validate([
+            'food_interests' => 'nullable|array',
+            'food_interests.*' => 'string|max:100',
+            'cooking_level' => 'nullable|in:beginner,intermediate,advanced,professional',
+            'social_preferences' => 'nullable|array',
+            'social_preferences.*' => 'string|max:100',
+            'notification_preferences' => 'nullable|array',
+            'notification_preferences.*' => 'string|max:100',
+        ]);
+
+        $user = Auth::user();
+        
+        $user->update([
+            'food_interests' => $request->food_interests ?? [],
+            'cooking_level' => $request->cooking_level,
+            'social_preferences' => $request->social_preferences ?? [],
+            'notification_preferences' => $request->notification_preferences ?? [],
+            'onboarding_complete' => true,
+        ]);
+
+        return redirect()->route('home');
+    }
+
+    // ===================
+    // HELPER METHODS
+    // ===================
+
+    private function getCommonAllergies()
+    {
+        return [
+            'Nuts (Tree nuts)',
+            'Peanuts',
+            'Dairy/Lactose',
+            'Gluten/Wheat',
+            'Eggs',
+            'Shellfish',
+            'Fish',
+            'Soy',
+            'Sesame',
+            'Sulfites'
+        ];
+    }
+
+    private function getDietaryOptions()
+    {
+        return [
+            'Vegetarian',
+            'Vegan',
+            'Pescatarian',
+            'Keto',
+            'Paleo',
+            'Low Carb',
+            'Gluten-Free',
+            'Dairy-Free',
+            'Kosher',
+            'Halal',
+            'Raw Food',
+            'Mediterranean'
+        ];
+    }
+
+    private function getInterestCategories()
+    {
+        return [
+            'food_types' => [
+                'Street Food',
+                'Fine Dining',
+                'Home Cooking',
+                'Baking & Desserts',
+                'BBQ & Grilling',
+                'Healthy Eating',
+                'International Cuisine',
+                'Local Specialties'
+            ],
+            'activities' => [
+                'Recipe Sharing',
+                'Restaurant Reviews',
+                'Food Photography',
+                'Cooking Tutorials',
+                'Food Events',
+                'Wine/Beverage Pairing',
+                'Food Challenges',
+                'Meal Planning'
+            ],
+            'social_features' => [
+                'Follow Food Bloggers',
+                'Join Local Food Groups',
+                'Share Meal Photos',
+                'Rate & Review',
+                'Food Recommendations',
+                'Cooking Collaborations'
+            ]
+        ];
     }
 }

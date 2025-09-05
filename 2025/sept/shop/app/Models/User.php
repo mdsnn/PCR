@@ -21,19 +21,20 @@ class User extends Authenticatable
         'name',
         'email',
         'username',
+        'profile_picture',
         'password',
         'bio',
         'location',
         'allergies',
-    'dietary_restrictions',
-    'favorite_cuisines',
-    'spice_tolerance',
-    'food_interests',
-    'cooking_level',
-    'social_preferences',
-    'notification_preferences',
-    'onboarding_complete',
-    'is_seller',
+        'dietary_restrictions',
+        'favorite_cuisines',
+        'spice_tolerance',
+        'food_interests',
+        'cooking_level',
+        'social_preferences',
+        'notification_preferences',
+        'onboarding_complete',
+        'is_seller',
     ];
 
     /**
@@ -54,8 +55,16 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+           'email_verified_at' => 'datetime',
+           'password' => 'hashed',
+           'is_seller' => 'boolean',
+           'onboarding_complete' => 'boolean',
+           'allergies' => 'array',
+           'dietary_restrictions' => 'array',
+           'favorite_cuisines' => 'array',
+           'food_interests' => 'array',
+           'social_preferences' => 'array',
+           'notification_preferences' => 'array',
         ];
     }
     public function store()
