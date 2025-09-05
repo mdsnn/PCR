@@ -62,7 +62,6 @@ const canSubmit = computed(() => location.value.trim().length > 0);
 function nextStep() {
     if (currentStep.value < totalSteps) {
         currentStep.value++;
-        // Auto-focus on location step
         if (currentStep.value === 3) {
             getUserLocation();
         }
@@ -95,8 +94,6 @@ function getUserLocation() {
             latitude.value = position.coords.latitude;
             longitude.value = position.coords.longitude;
             isGettingLocation.value = false;
-            
-            // Optional: Reverse geocoding to get address
             reverseGeocode(latitude.value, longitude.value);
         },
         (error) => {
@@ -118,7 +115,6 @@ function getUserLocation() {
     );
 }
 
-// Simple reverse geocoding using a free API
 async function reverseGeocode(lat, lng) {
     try {
         const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
@@ -144,7 +140,6 @@ function submit() {
     });
 }
 
-// Handle click outside dropdown
 function handleClickOutside(event) {
     if (!event.target.closest('.store-type-dropdown')) {
         showTypeDropdown.value = false;
@@ -157,7 +152,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center px-4">
+    <div class="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 flex items-center justify-center px-4">
         <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">
             <!-- Progress Bar -->
             <div class="bg-gray-50 px-8 py-6">
@@ -169,16 +164,16 @@ onMounted(() => {
                 <!-- Progress Bar -->
                 <div class="w-full bg-gray-200 rounded-full h-2">
                     <div 
-                        class="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-500 ease-out"
+                        class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-500 ease-out"
                         :style="{ width: progress + '%' }"
                     ></div>
                 </div>
                 
                 <!-- Step Labels -->
                 <div class="flex justify-between mt-4 text-xs">
-                    <span :class="currentStep >= 1 ? 'text-indigo-600 font-medium' : 'text-gray-400'">Store Name</span>
-                    <span :class="currentStep >= 2 ? 'text-indigo-600 font-medium' : 'text-gray-400'">Store Type</span>
-                    <span :class="currentStep >= 3 ? 'text-indigo-600 font-medium' : 'text-gray-400'">Location</span>
+                    <span :class="currentStep >= 1 ? 'text-green-600 font-medium' : 'text-gray-400'">Store Name</span>
+                    <span :class="currentStep >= 2 ? 'text-green-600 font-medium' : 'text-gray-400'">Store Type</span>
+                    <span :class="currentStep >= 3 ? 'text-green-600 font-medium' : 'text-gray-400'">Location</span>
                 </div>
             </div>
 
@@ -186,8 +181,8 @@ onMounted(() => {
                 <!-- Step 1: Store Name -->
                 <div v-if="currentStep === 1" class="space-y-6">
                     <div class="text-center">
-                        <div class="mx-auto w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-                            <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
                         </div>
@@ -201,7 +196,7 @@ onMounted(() => {
                                 v-model="name" 
                                 type="text" 
                                 placeholder="Enter your store name" 
-                                class="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:outline-none transition-colors text-lg"
+                                class="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-lg"
                                 @keyup.enter="canProceedFromStep1 && nextStep()"
                                 autofocus
                             />
@@ -211,7 +206,7 @@ onMounted(() => {
                             <button 
                                 @click="nextStep"
                                 :disabled="!canProceedFromStep1"
-                                class="px-8 py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                class="px-8 py-3 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                             >
                                 Continue
                             </button>
@@ -222,8 +217,8 @@ onMounted(() => {
                 <!-- Step 2: Store Type -->
                 <div v-if="currentStep === 2" class="space-y-6">
                     <div class="text-center">
-                        <div class="mx-auto w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                            <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
                         </div>
@@ -237,7 +232,7 @@ onMounted(() => {
                                 v-model="typeSearch" 
                                 type="text" 
                                 placeholder="Search for your store type..." 
-                                class="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg"
+                                class="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-lg"
                                 @focus="showTypeDropdown = true"
                                 @input="showTypeDropdown = true"
                             />
@@ -275,7 +270,7 @@ onMounted(() => {
                             <button 
                                 @click="nextStep"
                                 :disabled="!canProceedFromStep2"
-                                class="px-8 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                class="px-8 py-3 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                             >
                                 Continue
                             </button>
@@ -353,7 +348,7 @@ onMounted(() => {
                             <button 
                                 @click="submit"
                                 :disabled="!canSubmit"
-                                class="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                class="px-8 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-medium hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                             >
                                 Complete Setup
                             </button>

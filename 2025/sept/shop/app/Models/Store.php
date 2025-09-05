@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Store extends Model
 {
     use HasFactory;
-
-
+    
     protected $fillable = [
         'user_id',
         'name',
@@ -17,6 +16,7 @@ class Store extends Model
         'location',
         'latitude',
         'longitude',
+        'logo',
     ];
 
     /**
@@ -25,5 +25,16 @@ class Store extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the full URL for the logo
+     */
+    public function getLogoUrlAttribute()
+    {
+        if ($this->logo) {
+            return asset('storage/' . $this->logo);
+        }
+        return null;
     }
 }
