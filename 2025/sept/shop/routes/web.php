@@ -17,40 +17,44 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::post('/logout', [MagicLinkController::class, 'logout'])->name('logout');
 
-    Route::get('/onboarding', [OnboardingController::class, 'start'])->name('onboarding.start');
-    Route::post('/onboarding/choose-role', [OnboardingController::class, 'chooseRole'])->name('onboarding.chooseRole');
+    // Onboarding routes
+    Route::prefix('onboarding')->name('onboarding.')->group(function () {
+        Route::get('/', [OnboardingController::class, 'start'])->name('start');
+        Route::post('/choose-role', [OnboardingController::class, 'chooseRole'])->name('chooseRole');
+        
+        // Seller onboarding
+        Route::get('/store-setup', [OnboardingController::class, 'storeSetup'])->name('storeSetup');
+        Route::post('/store-setup', [OnboardingController::class, 'saveStore'])->name('saveStore');
+        Route::get('/setup-complete/{store}', [OnboardingController::class, 'setupComplete'])->name('setupComplete');
+        
+        // User onboarding
+        Route::get('/profile', [OnboardingController::class, 'userProfile'])->name('userProfile');
+        Route::post('/profile', [OnboardingController::class, 'saveUserProfile'])->name('saveUserProfile');
+        
+        Route::get('/dietary-preferences', [OnboardingController::class, 'dietaryPreferences'])->name('dietaryPreferences');
+        Route::post('/dietary-preferences', [OnboardingController::class, 'saveDietaryPreferences'])->name('saveDietaryPreferences');
+        
+        Route::get('/interests', [OnboardingController::class, 'interests'])->name('interests');
+        Route::post('/interests', [OnboardingController::class, 'saveInterests'])->name('saveInterests');
+        
+        Route::get('/welcome', [OnboardingController::class, 'welcome'])->name('welcome');
+    });
 
-    Route::get('/onboarding/store-setup', [OnboardingController::class, 'storeSetup'])->name('onboarding.storeSetup');
-    Route::post('/onboarding/store-setup', [OnboardingController::class, 'saveStore'])->name('onboarding.saveStore');
-    Route::get('/onboarding/setup-complete/{store}', [OnboardingController::class, 'setupComplete'])
-    ->name('onboarding.setupComplete')
-    ->middleware('auth');
-    Route::get('/onboarding/profile', [OnboardingController::class, 'userProfile'])->name('userProfile');
-    Route::post('/onboarding/profile', [OnboardingController::class, 'saveUserProfile'])->name('saveUserProfile');
-    
-    Route::get('/onboarding/dietary-preferences', [OnboardingController::class, 'dietaryPreferences'])->name('dietaryPreferences');
-    Route::post('/onboarding/dietary-preferences', [OnboardingController::class, 'saveDietaryPreferences'])->name('saveDietaryPreferences');
-    
-    Route::get('/onboarding/interests', [OnboardingController::class, 'interests'])->name('interests');
-    Route::post('/onboarding/interests', [OnboardingController::class, 'saveInterests'])->name('saveInterests');
+    // Dashboard routes
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('/farm', [DashboardController::class, 'farm'])->name('farm');
+        Route::get('/poultry', [DashboardController::class, 'poultry'])->name('poultry');
+        Route::get('/bakery', [DashboardController::class, 'bakery'])->name('bakery');
+        Route::get('/grocery', [DashboardController::class, 'grocery'])->name('grocery');
+        Route::get('/restaurant', [DashboardController::class, 'restaurant'])->name('restaurant');
+        Route::get('/coffee', [DashboardController::class, 'coffee'])->name('coffee');
+        Route::get('/default', function () {
+            return Inertia::render('Dashboard/Default');
+        })->name('default');
+    });
 
-    Route::get('/dashboard/farm', [DashboardController::class, 'farm'])->name('dashboard.farm');
-    Route::get('/dashboard/poultry', [DashboardController::class, 'poultry'])->name('dashboard.poultry');
-    Route::get('/dashboard/bakery', [DashboardController::class, 'bakery'])->name('dashboard.bakery');
-    Route::get('/dashboard/grocery', [DashboardController::class, 'grocery'])->name('dashboard.grocery');
-    Route::get('/dashboard/restaurant', [DashboardController::class, 'restaurant'])->name('dashboard.restaurant');
-    Route::get('/dashboard/coffee', [DashboardController::class, 'coffee'])->name('dashboard.coffee');
-    Route::get('/dashboard/default', function () {
-    return Inertia::render('Dashboard/Default');})->name('dashboard.default');
-    
+    // Other routes
     Route::get('/map', function () {
-    return Inertia::render('Map');
-})->name('map');
-
+        return Inertia::render('Map');
+    })->name('map');
 });
-
-
-
-
-
-    
