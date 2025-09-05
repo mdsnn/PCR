@@ -6,12 +6,23 @@ use App\Models\Store;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class OnboardingController extends Controller
 {
     public function start()
     {
-        return inertia('Onboarding/Start');
+        $user = Auth::user();
+        
+        // If user has already completed onboarding, redirect them
+        if ($user->onboarding_complete) {
+            return redirect()->to($user->redirectAfterLogin());
+        }
+
+        return inertia('Onboarding/Start', [
+            'user' => $user->only(['name', 'email'])
+        ]);
     }
 
     public function chooseRole(Request $request)
@@ -29,7 +40,7 @@ class OnboardingController extends Controller
             return redirect()->route('onboarding.storeSetup');
         }
 
-        // Redirect to user onboarding flow instead of completing immediately
+        // Redirect to user onboarding flow
         return redirect()->route('onboarding.userProfile');
     }
 
@@ -37,57 +48,73 @@ class OnboardingController extends Controller
     // SELLER ONBOARDING
     // ===================
 
-    // Step 1: Store setup form
     public function storeSetup()
     {
-        return inertia('Onboarding/StoreSetup');
-    }
-
-    // Step 2: Save store details
-    public function saveStore(Request $request)
-    {
-        $request->validate([
-            'name'      => 'required|string|max:255',
-            'type'      => 'required|string|max:255',
-            'location'  => 'required|string|max:255',
-            'latitude'  => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
-            'logo'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
         $user = Auth::user();
         
+        if (!$user->is_seller) {
+            return redirect()->route('onboarding.start');
+        }
+
+        return inertia('Onboarding/StoreSetup', [
+            'storeTypes' => $this->getStoreTypes(),
+            'user' => $user->only(['name', 'email'])
+        ]);
+    }
+
+    public function saveStore(Request $request)
+    {
+        $user = Auth::user();
+        
+        if (!$user->is_seller) {
+            return redirect()->route('onboarding.start');
+        }
+
+        $request->validate([
+            'name'        => 'required|string|max:255|unique:stores,name',
+            'type'        => ['required', 'string', Rule::in(array_keys($this->getStoreTypes()))],
+            'description' => 'nullable|string|max:1000',
+            'location'    => 'required|string|max:255',
+            'latitude'    => 'nullable|numeric|between:-90,90',
+            'longitude'   => 'nullable|numeric|between:-180,180',
+            'logo'        => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'phone'       => 'nullable|string|max:20',
+            'website'     => 'nullable|url|max:255',
+        ]);
+
         $logoPath = null;
         if ($request->hasFile('logo')) {
             $logoPath = $request->file('logo')->store('store-logos', 'public');
         }
 
         $store = Store::create([
-            'user_id'   => $user->id,
-            'name'      => $request->name,
-            'type'      => $request->type,
-            'location'  => $request->location,
-            'latitude'  => $request->latitude,
-            'longitude' => $request->longitude,
-            'logo'      => $logoPath,
+            'user_id'     => $user->id,
+            'name'        => $request->name,
+            'type'        => $request->type,
+            'description' => $request->description,
+            'location'    => $request->location,
+            'latitude'    => $request->latitude,
+            'longitude'   => $request->longitude,
+            'logo'        => $logoPath,
+            'phone'       => $request->phone,
+            'website'     => $request->website,
         ]);
 
         $user->onboarding_complete = true;
         $user->save();
 
-        // Redirect based on store type
         return redirect()->route('onboarding.setupComplete', ['store' => $store->id]);
-    
     }
+
     public function setupComplete(Store $store)
     {
-        // Make sure the store belongs to the authenticated user
         if ($store->user_id !== Auth::id()) {
             abort(403);
         }
 
         return inertia('Onboarding/SetupComplete', [
-            'store' => $store
+            'store' => $store->load('user'),
+            'dashboardUrl' => route("dashboard.{$store->type}")
         ]);
     }
 
@@ -95,63 +122,98 @@ class OnboardingController extends Controller
     // USER ONBOARDING
     // ===================
 
-    // Step 1: Collect user profile information
     public function userProfile()
     {
         $user = Auth::user();
         
+        if ($user->is_seller) {
+            return redirect()->route('onboarding.storeSetup');
+        }
+
         return inertia('Onboarding/UserProfile', [
-            'user' => $user
+            'user' => $user->only(['name', 'email', 'username', 'bio', 'location']),
+            'progress' => $this->calculateUserOnboardingProgress($user, 1)
         ]);
     }
 
-    // Step 2: Save profile and go to dietary preferences
     public function saveUserProfile(Request $request)
     {
-        $request->validate([
-            'username' => 'required|string|max:255',
-            'bio' => 'nullable|string|max:500',
-            'location' => 'nullable|string|max:255',
-        ]);
-
         $user = Auth::user();
         
+        if ($user->is_seller) {
+            return redirect()->route('onboarding.storeSetup');
+        }
+
+        $request->validate([
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+                'alpha_dash',
+                Rule::unique('users', 'username')->ignore($user->id)
+            ],
+            'bio' => 'nullable|string|max:500',
+            'location' => 'nullable|string|max:255',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $profilePicturePath = $user->profile_picture;
+        if ($request->hasFile('profile_picture')) {
+            // Delete old profile picture if exists
+            if ($profilePicturePath && Storage::disk('public')->exists($profilePicturePath)) {
+                Storage::disk('public')->delete($profilePicturePath);
+            }
+            $profilePicturePath = $request->file('profile_picture')->store('profile-pictures', 'public');
+        }
+
         $user->update([
             'username' => $request->username,
             'bio' => $request->bio,
             'location' => $request->location,
+            'profile_picture' => $profilePicturePath,
         ]);
 
         return redirect()->route('onboarding.dietaryPreferences');
     }
 
-    // Step 3: Collect dietary preferences and allergies
     public function dietaryPreferences()
     {
         $user = Auth::user();
         
+        if ($user->is_seller) {
+            return redirect()->route('onboarding.storeSetup');
+        }
+
         return inertia('Onboarding/DietaryPreferences', [
-            'user' => $user,
+            'user' => $user->only([
+                'allergies', 'dietary_restrictions', 'favorite_cuisines', 'spice_tolerance'
+            ]),
             'commonAllergies' => $this->getCommonAllergies(),
-            'dietaryOptions' => $this->getDietaryOptions()
+            'dietaryOptions' => $this->getDietaryOptions(),
+            'cuisineOptions' => $this->getCuisineOptions(),
+            'spiceOptions' => $this->getSpiceOptions(),
+            'progress' => $this->calculateUserOnboardingProgress($user, 2)
         ]);
     }
 
-    // Step 4: Save dietary preferences
     public function saveDietaryPreferences(Request $request)
     {
+        $user = Auth::user();
+        
+        if ($user->is_seller) {
+            return redirect()->route('onboarding.storeSetup');
+        }
+
         $request->validate([
-            'allergies' => 'nullable|array',
+            'allergies' => 'nullable|array|max:10',
             'allergies.*' => 'string|max:100',
-            'dietary_restrictions' => 'nullable|array',
+            'dietary_restrictions' => 'nullable|array|max:10',
             'dietary_restrictions.*' => 'string|max:100',
-            'favorite_cuisines' => 'nullable|array',
+            'favorite_cuisines' => 'nullable|array|max:15',
             'favorite_cuisines.*' => 'string|max:100',
             'spice_tolerance' => 'nullable|in:none,mild,medium,hot,very_hot',
         ]);
 
-        $user = Auth::user();
-        
         $user->update([
             'allergies' => $request->allergies ?? [],
             'dietary_restrictions' => $request->dietary_restrictions ?? [],
@@ -162,51 +224,100 @@ class OnboardingController extends Controller
         return redirect()->route('onboarding.interests');
     }
 
-    // Step 5: Food interests and social preferences
     public function interests()
     {
         $user = Auth::user();
         
+        if ($user->is_seller) {
+            return redirect()->route('onboarding.storeSetup');
+        }
+
         return inertia('Onboarding/Interests', [
-            'user' => $user,
-            'interestCategories' => $this->getInterestCategories()
+            'user' => $user->only([
+                'food_interests', 'cooking_level', 'social_preferences', 'notification_preferences'
+            ]),
+            'interestCategories' => $this->getInterestCategories(),
+            'cookingLevels' => $this->getCookingLevels(),
+            'socialOptions' => $this->getSocialOptions(),
+            'notificationOptions' => $this->getNotificationOptions(),
+            'progress' => $this->calculateUserOnboardingProgress($user, 3)
         ]);
     }
 
-    // Step 6: Save interests and complete onboarding
     public function saveInterests(Request $request)
     {
+        $user = Auth::user();
+        
+        if ($user->is_seller) {
+            return redirect()->route('onboarding.storeSetup');
+        }
+
         $request->validate([
-            'food_interests' => 'nullable|array',
+            'food_interests' => 'nullable|array|max:20',
             'food_interests.*' => 'string|max:100',
             'cooking_level' => 'nullable|in:beginner,intermediate,advanced,professional',
-            'social_preferences' => 'nullable|array',
+            'social_preferences' => 'nullable|array|max:10',
             'social_preferences.*' => 'string|max:100',
-            'notification_preferences' => 'nullable|array',
+            'notification_preferences' => 'nullable|array|max:10',
             'notification_preferences.*' => 'string|max:100',
         ]);
 
-        $user = Auth::user();
-        
         $user->update([
             'food_interests' => $request->food_interests ?? [],
             'cooking_level' => $request->cooking_level,
             'social_preferences' => $request->social_preferences ?? [],
             'notification_preferences' => $request->notification_preferences ?? [],
             'onboarding_complete' => true,
+            'email_verified_at' => now(), // Mark email as verified since they used magic link
         ]);
 
-        return redirect()->route('home');
+        return redirect()->route('onboarding.welcome');
+    }
+
+    public function welcome()
+    {
+        $user = Auth::user();
+        
+        if (!$user->onboarding_complete) {
+            return redirect()->route('onboarding.start');
+        }
+
+        return inertia('Onboarding/Welcome', [
+            'user' => $user->only(['name', 'username', 'profile_picture']),
+            'homeUrl' => route('home')
+        ]);
     }
 
     // ===================
     // HELPER METHODS
     // ===================
 
+    private function calculateUserOnboardingProgress($user, $currentStep)
+    {
+        $totalSteps = 3; // Profile, Dietary, Interests
+        return [
+            'current' => $currentStep,
+            'total' => $totalSteps,
+            'percentage' => round(($currentStep / $totalSteps) * 100)
+        ];
+    }
+
+    private function getStoreTypes()
+    {
+        return [
+            'farm' => 'Farm',
+            'poultry' => 'Poultry',
+            'bakery' => 'Bakery',
+            'grocery' => 'Grocery Store',
+            'restaurant' => 'Restaurant',
+            'coffee' => 'Coffee Shop',
+        ];
+    }
+
     private function getCommonAllergies()
     {
         return [
-            'Nuts (Tree nuts)',
+            'Tree nuts',
             'Peanuts',
             'Dairy/Lactose',
             'Gluten/Wheat',
@@ -215,7 +326,9 @@ class OnboardingController extends Controller
             'Fish',
             'Soy',
             'Sesame',
-            'Sulfites'
+            'Sulfites',
+            'Corn',
+            'Strawberries',
         ];
     }
 
@@ -233,7 +346,41 @@ class OnboardingController extends Controller
             'Kosher',
             'Halal',
             'Raw Food',
-            'Mediterranean'
+            'Mediterranean',
+            'Intermittent Fasting',
+            'Plant-Based',
+        ];
+    }
+
+    private function getCuisineOptions()
+    {
+        return [
+            'Italian', 'Chinese', 'Mexican', 'Indian', 'Thai', 'Japanese',
+            'French', 'Mediterranean', 'American', 'Korean', 'Vietnamese',
+            'Middle Eastern', 'Greek', 'Spanish', 'German', 'Caribbean',
+            'Ethiopian', 'Moroccan', 'Brazilian', 'Peruvian', 'Lebanese',
+            'Turkish', 'Russian', 'Scandinavian', 'African'
+        ];
+    }
+
+    private function getSpiceOptions()
+    {
+        return [
+            'none' => 'No Spice',
+            'mild' => 'Mild',
+            'medium' => 'Medium',
+            'hot' => 'Hot',
+            'very_hot' => 'Very Hot'
+        ];
+    }
+
+    private function getCookingLevels()
+    {
+        return [
+            'beginner' => 'Beginner - Just starting out',
+            'intermediate' => 'Intermediate - Comfortable with basics',
+            'advanced' => 'Advanced - Skilled home cook',
+            'professional' => 'Professional - Industry experience'
         ];
     }
 
@@ -248,7 +395,11 @@ class OnboardingController extends Controller
                 'BBQ & Grilling',
                 'Healthy Eating',
                 'International Cuisine',
-                'Local Specialties'
+                'Local Specialties',
+                'Farm to Table',
+                'Organic Foods',
+                'Artisanal Products',
+                'Seasonal Cooking'
             ],
             'activities' => [
                 'Recipe Sharing',
@@ -258,16 +409,44 @@ class OnboardingController extends Controller
                 'Food Events',
                 'Wine/Beverage Pairing',
                 'Food Challenges',
-                'Meal Planning'
+                'Meal Planning',
+                'Food Blogging',
+                'Cooking Classes',
+                'Food Festivals',
+                'Market Shopping'
             ],
-            'social_features' => [
-                'Follow Food Bloggers',
-                'Join Local Food Groups',
-                'Share Meal Photos',
-                'Rate & Review',
-                'Food Recommendations',
-                'Cooking Collaborations'
-            ]
+        ];
+    }
+
+    private function getSocialOptions()
+    {
+        return [
+            'Follow Food Bloggers',
+            'Join Local Food Groups',
+            'Share Meal Photos',
+            'Rate & Review Places',
+            'Get Food Recommendations',
+            'Cooking Collaborations',
+            'Food Discussions',
+            'Recipe Exchanges',
+            'Local Food Events',
+            'Cooking Competitions'
+        ];
+    }
+
+    private function getNotificationOptions()
+    {
+        return [
+            'New Restaurants Nearby',
+            'Food Events & Festivals',
+            'Recipe Recommendations',
+            'Price Alerts on Favorites',
+            'Weekly Food Digest',
+            'Friend Activity Updates',
+            'Seasonal Food Tips',
+            'Special Offers & Deals',
+            'New Reviews on Followed Places',
+            'Cooking Tips & Tricks'
         ];
     }
 }
