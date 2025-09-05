@@ -268,9 +268,10 @@ class OnboardingController extends Controller
             'social_preferences' => $request->social_preferences ?? [],
             'notification_preferences' => $request->notification_preferences ?? [],
             'onboarding_complete' => true,
-            'email_verified_at' => now(), // Mark email as verified since they used magic link
+            'email_verified_at' => now() // Mark email as verified since they used magic link
         ]);
-
+        
+        session(['show_welcome' => true]);
         return redirect()->route('onboarding.welcome');
     }
 

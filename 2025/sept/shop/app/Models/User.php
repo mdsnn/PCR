@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -52,7 +53,6 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_seller' => 'boolean',
@@ -66,7 +66,17 @@ class User extends Authenticatable
         'notification_preferences' => 'array',
     ];
 
-    // You can add accessor methods for better data handling
+    /**
+     * Relationships
+     */
+    public function store()
+    {
+        return $this->hasOne(Store::class);
+    }
+
+    /**
+     * Accessor methods for better data handling
+     */
     public function hasAllergy($allergy)
     {
         return in_array($allergy, $this->allergies ?? []);
@@ -89,31 +99,124 @@ class User extends Authenticatable
 
         return $levels[$this->spice_tolerance] ?? 'Not specified';
     }
-    public function store()
+
+    public function getProfilePictureUrlAttribute()
     {
-        return $this->hasOne(Store::class);
+        if ($this->profile_picture) {
+            return Storage::disk('public')->url($this->profile_picture);
+        }
+        
+        // Return a default avatar or initials-based avatar
+        return $this->generateAvatarUrl();
     }
+
+    /**
+     * Check if user has completed their profile setup
+     */
+    public function hasCompletedProfile()
+    {
+        if ($this->is_seller) {
+            return $this->onboarding_complete && $this->store()->exists();
+        }
+        
+        return $this->onboarding_complete && !empty($this->username);
+    }
+
+    /**
+     * Determine where to redirect user after login
+     */
     public function redirectAfterLogin()
     {
-        // Step 1: Onboarding check
+        // Step 1: Check if onboarding is incomplete
         if (!$this->onboarding_complete) {
             return route('onboarding.start');
         }
 
-        // Step 2: Seller check
-        if ($this->is_seller && $this->store) {
-            $type = $this->store->type;
-
-            if (in_array($type, ['farm','poultry','bakery','grocery','restaurant','coffee'])) {
-                return route("dashboard.{$type}");
+        // Step 2: Handle seller redirection
+        if ($this->is_seller) {
+            // Check if seller has a store
+            if ($this->store) {
+                $storeType = $this->store->type;
+                
+                // Redirect to specific dashboard if store type is supported
+                if (in_array($storeType, ['farm', 'poultry', 'bakery', 'grocery', 'restaurant', 'coffee'])) {
+                    return route("dashboard.{$storeType}");
+                }
+                
+                // Fallback to default dashboard for unknown store types
+                return route("dashboard.default");
+            } else {
+                // Seller without store - redirect back to store setup
+                return route('onboarding.storeSetup');
             }
-
-            // fallback dashboard for unknown store types
-            return route("dashboard.default");
         }
 
-        // Step 3: Default buyer redirect
+        // Step 3: Handle buyer redirection
+        // If buyer just completed onboarding, show welcome screen briefly
+        if ($this->wasRecentlyCreated || session('show_welcome')) {
+            session()->forget('show_welcome');
+            return route('onboarding.welcome');
+        }
+
+        // Default buyer redirect to home
         return route('home');
     }
-}
 
+    /**
+     * Generate a default avatar URL (could be initials-based or default image)
+     */
+    private function generateAvatarUrl()
+    {
+        // You can implement this to generate initials-based avatars
+        // or return a default avatar image
+        $initials = strtoupper(substr($this->name, 0, 1));
+        return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&color=7F9CF5&background=EBF4FF&size=200";
+    }
+
+    /**
+     * Get user's display name (username or name)
+     */
+    public function getDisplayNameAttribute()
+    {
+        return $this->username ?: $this->name;
+    }
+
+    /**
+     * Check if user has specific food interest
+     */
+    public function hasInterest($interest)
+    {
+        return in_array($interest, $this->food_interests ?? []);
+    }
+
+    /**
+     * Get user's cooking level display text
+     */
+    public function getCookingLevelTextAttribute()
+    {
+        $levels = [
+            'beginner' => 'Beginner Cook',
+            'intermediate' => 'Intermediate Cook',
+            'advanced' => 'Advanced Cook',
+            'professional' => 'Professional Chef'
+        ];
+
+        return $levels[$this->cooking_level] ?? 'Not specified';
+    }
+
+    /**
+     * Scope for filtering users by dietary restrictions
+     */
+    public function scopeWithDietaryRestriction($query, $restriction)
+    {
+        return $query->whereJsonContains('dietary_restrictions', $restriction);
+    }
+
+    /**
+     * Scope for filtering users by location
+     */
+    public function scopeInLocation($query, $location)
+    {
+        return $query->where('location', 'like', "%{$location}%");
+    }
+}
