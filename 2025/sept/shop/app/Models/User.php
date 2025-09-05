@@ -23,6 +23,8 @@ class User extends Authenticatable
         'username',
         'profile_picture',
         'password',
+        'onboarding_complete',
+        'is_seller',
         'bio',
         'location',
         'allergies',
@@ -32,9 +34,7 @@ class User extends Authenticatable
         'food_interests',
         'cooking_level',
         'social_preferences',
-        'notification_preferences',
-        'onboarding_complete',
-        'is_seller',
+        'notification_preferences'
     ];
 
     /**
@@ -52,20 +52,42 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'is_seller' => 'boolean',
+        'onboarding_complete' => 'boolean',
+        // Cast JSON fields to arrays
+        'allergies' => 'array',
+        'dietary_restrictions' => 'array',
+        'favorite_cuisines' => 'array',
+        'food_interests' => 'array',
+        'social_preferences' => 'array',
+        'notification_preferences' => 'array',
+    ];
+
+    // You can add accessor methods for better data handling
+    public function hasAllergy($allergy)
     {
-        return [
-           'email_verified_at' => 'datetime',
-           'password' => 'hashed',
-           'is_seller' => 'boolean',
-           'onboarding_complete' => 'boolean',
-           'allergies' => 'array',
-           'dietary_restrictions' => 'array',
-           'favorite_cuisines' => 'array',
-           'food_interests' => 'array',
-           'social_preferences' => 'array',
-           'notification_preferences' => 'array',
+        return in_array($allergy, $this->allergies ?? []);
+    }
+
+    public function hasDietaryRestriction($restriction)
+    {
+        return in_array($restriction, $this->dietary_restrictions ?? []);
+    }
+
+    public function getSpiceToleranceTextAttribute()
+    {
+        $levels = [
+            'none' => 'No Spice',
+            'mild' => 'Mild',
+            'medium' => 'Medium',
+            'hot' => 'Hot',
+            'very_hot' => 'Very Hot'
         ];
+
+        return $levels[$this->spice_tolerance] ?? 'Not specified';
     }
     public function store()
     {
@@ -94,3 +116,4 @@ class User extends Authenticatable
         return route('home');
     }
 }
+
