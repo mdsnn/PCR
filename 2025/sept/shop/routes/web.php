@@ -22,7 +22,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/onboarding/store-setup', [OnboardingController::class, 'storeSetup'])->name('onboarding.storeSetup');
     Route::post('/onboarding/store-setup', [OnboardingController::class, 'saveStore'])->name('onboarding.saveStore');
-
+    Route::get('/onboarding/setup-complete/{store}', [OnboardingController::class, 'setupComplete'])
+    ->name('onboarding.setupComplete')
+    ->middleware('auth');
     
     Route::get('/dashboard/farm', [DashboardController::class, 'farm'])->name('dashboard.farm');
     Route::get('/dashboard/poultry', [DashboardController::class, 'poultry'])->name('dashboard.poultry');
