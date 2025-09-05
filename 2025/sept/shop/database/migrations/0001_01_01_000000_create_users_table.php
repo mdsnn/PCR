@@ -23,12 +23,14 @@ return new class extends Migration
             $table->boolean('is_seller')->default(false); // optional, if you want to track role
             $table->text('bio')->nullable();
             $table->string('location')->nullable();
+            // Dietary information
             $table->json('allergies')->nullable();
             $table->json('dietary_restrictions')->nullable();
             $table->json('favorite_cuisines')->nullable();
-            $table->string('spice_tolerance')->nullable();
+            $table->enum('spice_tolerance', ['none', 'mild', 'medium', 'hot', 'very_hot'])->nullable();
+            // Interests and preferences
             $table->json('food_interests')->nullable();
-            $table->string('cooking_level')->nullable();
+            $table->enum('cooking_level', ['beginner', 'intermediate', 'advanced', 'professional'])->nullable();
             $table->json('social_preferences')->nullable();
             $table->json('notification_preferences')->nullable();
             $table->rememberToken();

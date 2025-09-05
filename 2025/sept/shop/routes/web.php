@@ -25,7 +25,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/onboarding/setup-complete/{store}', [OnboardingController::class, 'setupComplete'])
     ->name('onboarding.setupComplete')
     ->middleware('auth');
+    Route::get('/onboarding/profile', [OnboardingController::class, 'userProfile'])->name('userProfile');
+    Route::post('/onboarding/profile', [OnboardingController::class, 'saveUserProfile'])->name('saveUserProfile');
     
+    Route::get('/onboarding/dietary-preferences', [OnboardingController::class, 'dietaryPreferences'])->name('dietaryPreferences');
+    Route::post('/onboarding/dietary-preferences', [OnboardingController::class, 'saveDietaryPreferences'])->name('saveDietaryPreferences');
+    
+    Route::get('/onboarding/interests', [OnboardingController::class, 'interests'])->name('interests');
+    Route::post('/onboarding/interests', [OnboardingController::class, 'saveInterests'])->name('saveInterests');
+
     Route::get('/dashboard/farm', [DashboardController::class, 'farm'])->name('dashboard.farm');
     Route::get('/dashboard/poultry', [DashboardController::class, 'poultry'])->name('dashboard.poultry');
     Route::get('/dashboard/bakery', [DashboardController::class, 'bakery'])->name('dashboard.bakery');
