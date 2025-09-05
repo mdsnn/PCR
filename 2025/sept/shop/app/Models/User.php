@@ -20,7 +20,20 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'username',
         'password',
+        'bio',
+        'location',
+        'allergies',
+    'dietary_restrictions',
+    'favorite_cuisines',
+    'spice_tolerance',
+    'food_interests',
+    'cooking_level',
+    'social_preferences',
+    'notification_preferences',
+    'onboarding_complete',
+    'is_seller',
     ];
 
     /**
