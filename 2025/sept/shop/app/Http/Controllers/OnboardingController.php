@@ -160,6 +160,7 @@ class OnboardingController extends Controller
         $user->update([
             'name' => $request->name,
             'profile_picture' => $profilePicturePath,
+            'onboarding_complete' => true,
         ]);
 
         return redirect()->route('onboarding.welcome');
