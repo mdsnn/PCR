@@ -162,7 +162,7 @@ class OnboardingController extends Controller
             'profile_picture' => $profilePicturePath,
         ]);
 
-        return redirect()->route('onboarding.dietaryPreferences');
+        return redirect()->route('onboarding.welcome');
     }
 
     public function dietaryPreferences()
