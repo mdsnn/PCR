@@ -1,0 +1,19 @@
+<!-- app/views/authentication/_form.html.erb -->
+<%= form_with model: user, url: authentication_path, 
+              local: false, id: "magic_link_form",
+              class: "space-y-4" do |form| %>
+  
+  <div>
+    <%= form.label :email, class: "block text-sm font-medium" %>
+    <%= form.email_field :email, 
+                        class: "mt-1 block w-full rounded-md border-gray-300",
+                        placeholder: "Enter your email address" %>
+    <% if user.errors[:email].any? %>
+      <p class="mt-1 text-sm text-red-600"><%= user.errors[:email].first %></p>
+    <% end %>
+  </div>
+  
+  <%= form.submit "Send Magic Link", 
+                  class: "w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700",
+                  data: { turbo_submits_with: "Sending..." } %>
+<% end %>

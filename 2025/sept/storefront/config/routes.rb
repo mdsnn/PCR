@@ -11,5 +11,10 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "posts#index"
+  root 'posts#index'
+  
+  resource :authentication, only: [:new, :create, :destroy], controller: 'authentication' do
+    get :magic_link_sent, on: :collection
+    get :verify, path: "verify/:token", on: :collection
+  end
 end

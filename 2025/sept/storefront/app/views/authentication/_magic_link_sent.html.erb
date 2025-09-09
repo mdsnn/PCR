@@ -1,0 +1,20 @@
+<!-- app/views/authentication/_magic_link_sent.html.erb -->
+<div class="text-center p-6 bg-green-50 rounded-lg">
+  <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 7.89a2 2 0 002.82 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+  </div>
+  <h3 class="text-lg font-medium text-gray-900 mb-2">Check your email!</h3>
+  <p class="text-gray-600 mb-4">
+    We've sent a magic link to <strong><%= email %></strong>
+  </p>
+  <p class="text-sm text-gray-500">
+    The link will expire in 15 minutes. Check your spam folder if you don't see it.
+  </p>
+  
+  <div class="mt-6">
+    <%= link_to "Try a different email", new_authentication_path, 
+                class: "text-blue-600 hover:text-blue-500" %>
+  </div>
+</div>
