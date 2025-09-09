@@ -266,7 +266,7 @@ class OnboardingController extends Controller
         }
 
         return inertia('Onboarding/Welcome', [
-            'user' => $user->only(['name', 'username', 'profile_picture']),
+            'user' => $user->only(['name', 'profile_picture']),
             'homeUrl' => route('home')
         ]);
     }
