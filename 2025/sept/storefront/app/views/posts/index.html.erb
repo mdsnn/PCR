@@ -1,0 +1,32 @@
+<div class="max-w-4xl mx-auto p-6">
+  <!-- Flash notice -->
+  <% if notice.present? %>
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+      <%= notice %>
+    </div>
+  <% end %>
+
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Posts</h1>
+  </div>
+
+  <!-- Posts list -->
+  <div id="posts" class="space-y-6">
+    <% @posts.each do |post| %>
+      <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
+        <%= render post %>
+        <div class="mt-4">
+          <%= link_to "Show this post", post, 
+              class: "inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors duration-200" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- New post link -->
+  <div class="mt-8">
+    <%= link_to "New post", new_post_path, 
+        class: "inline-flex items-center px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition-colors duration-200" %>
+  </div>
+</div>

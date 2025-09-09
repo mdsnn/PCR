@@ -1,0 +1,24 @@
+<% content_for :title, "New post" %>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">New Post</h1>
+    <p class="mt-2 text-sm text-gray-600">Create a new post to share with your audience</p>
+  </div>
+
+  <!-- Form -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <%= render "form", post: @post %>
+  </div>
+
+  <!-- Back link -->
+  <div class="mt-6">
+    <%= link_to posts_path, class: "inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200" do %>
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Back to posts
+    <% end %>
+  </div>
+</div>
